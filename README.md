@@ -1,4 +1,4 @@
-# Your startup name here
+# ManageMe
 
 [My Notes](notes.md)
 
@@ -14,7 +14,7 @@ Managers will create a page/group for their business location, and would be the 
 
 ### Elevator pitch
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Anyone who's worked a part-time job at a restaurant, retail store, or local grocer can relate to frustrations at work. Even in great work environments, simple things fall through the cracks due to poor communication between employees and managers. ManageMe's purpose is to fill in those cracks. With one, simple app managers can keep track of the day-to-day updates in the workplace without having to dig through hundreds of emails. As managers update maintenance concerns, general announcements, and key reminders, employees can stay in the loop without having to ask the same questions over and over again. Managers can even authorize trusted employees to make real-time updates the managers might miss since they aren't always on the floor. Make managing easier with ManageMe!
 
 ### Design
 
@@ -31,9 +31,9 @@ sequenceDiagram
 
 ### Key features
 
-- Describe your key feature
-- Describe your key feature
-- Describe your key feature
+- Comprehensive, updating list of workplace maintenance concerns
+- General announcements for all employees
+- Ability for customers and employees to provide feedback to managers
 
 ### Technologies
 
@@ -53,7 +53,7 @@ I am going to use the required technologies in the following ways.
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Git commit requirement)
+- [x] I completed the prerequisites for this deliverable (Git commit requirement)
 - [ ] Proper use of Markdown
 - [ ] A concise and compelling elevator pitch
 - [ ] Description of key features
