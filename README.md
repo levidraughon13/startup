@@ -20,7 +20,7 @@ Anyone who's worked a part-time job at a restaurant, retail store, or local groc
 
 ![Design image](ManageMeSequenceDiagram.png)
 
-This is a rough diagram of the key features of the app. Obviously some steps as missing in this process, and the exact way these tools are worked may be changed for convenience to the user. 
+This is a rough diagram of the key features of the app. Obviously some steps are missing in this process, and the exact way these tools are worked may be changed for convenience to the user. 
 
 ![Design image](WebsiteSketch.png)
 
