@@ -2,7 +2,9 @@
 
 [My Notes](notes.md)
 
-A brief description of the application here. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+My startup application's purpose is to make things easier for managers/supervisors and employees in mainly part-time working environments (food industry, grocery stores, retail, etc). This could involve many tools, including organized lists for maintenance issues, general announcements, employee training trackers, and complaint forms. My focus will be on the first two (maintenance and announcements) to make communication between managers and employees more clear on a day-to-day basis in the workplace. 
+
+Managers will create a page/group for their business location, and would be the admin to adjust settings and how overall admin roles for the group. They can give other employees varying levels of access and control depending on their roles.The app will allow people to submit maintenance requests, allowing managers and authorized employees to see them, make them know to other employees as needed, and update the status of the requests in real time so everyone is in the loop. Pictures could be included as well.
 
 > [!NOTE]
 > This is a template for your startup application. You must modify this `README.md` file for each phase of your development. You only need to fill in the section for each deliverable when that deliverable is submitted in Canvas. Without completing the section for a deliverable, the TA will not know what to look for when grading your submission. Feel free to add additional information to each deliverable description, but make sure you at least have the list of rubric items and a description of what you did for each item.
