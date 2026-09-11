@@ -18,16 +18,13 @@ Anyone who's worked a part-time job at a restaurant, retail store, or local groc
 
 ### Design
 
-![Design image](placeholder.png)
+![Design image](ManageMeSequenceDiagram.png)
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+This is a rough diagram of the key features of the app. Obviously some steps as missing in this process, and the exact way these tools are worked may be changed for convenience to the user. 
 
-```mermaid
-sequenceDiagram
-    actor You
-    actor Website
-    You->>Website: Replace this with your design
-```
+![Design image](WebsiteSketch.png)
+
+A rough sketch of the website. The design will be very simple, with clear actions that are easy to understand.
 
 ### Key features
 
@@ -39,12 +36,12 @@ sequenceDiagram
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Description here
-- **CSS** - Description here
-- **React** - Description here
-- **Service** - Description here
-- **DB/Login** - Description here
-- **WebSocket** - Description here
+- **HTML** - At least 3 pages: 1 for employees to login, 1 dashboard for employees to view, and 1 for customers to submit complaints/issues.
+- **CSS** - Making sure sizing is appropriate on different sized screens. using very simple color choices and designs so functionality is readily apparent to users.
+- **React** - Login functionality, submitting of complaints/reports, displaying complaints/reports/announcements
+- **Service** - Backend support for login, new users, making a group/page for a business, storing of announcements and updates for employees and managers, use of public API https://dummyimage.com/ to get relevant icons for the maintenance issue report page.
+- **DB/Login** - All login info for employees will need to be stored, as well as their access levels. Additional, lists of announcments and maintenance reports will be stored.
+- **WebSocket** - Real-time updates of the list of maintenance issues and announcements as managers make updates to them.
 
 ## 🚀 Specification Deliverable
 
@@ -54,11 +51,11 @@ I am going to use the required technologies in the following ways.
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [x] I completed the prerequisites for this deliverable (Git commit requirement)
-- [ ] Proper use of Markdown
-- [ ] A concise and compelling elevator pitch
-- [ ] Description of key features
-- [ ] Description of how you will use each technology including your 3rd party API and use of WebSocket
-- [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
+- [x] Proper use of Markdown
+- [x] A concise and compelling elevator pitch
+- [x] Description of key features
+- [x] Description of how you will use each technology including your 3rd party API and use of WebSocket
+- [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
 ## 🚀 AWS deliverable
 
