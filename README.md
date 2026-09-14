@@ -1,4 +1,4 @@
-# ManageMe
+# CrewComms
 
 [My Notes](notes.md)
 
@@ -14,11 +14,11 @@ Managers will create a page/group for their business location, and would be the 
 
 ### Elevator pitch
 
-Anyone who's worked a part-time job at a restaurant, retail store, or local grocer can relate to frustrations at work. Even in great work environments, simple things fall through the cracks due to poor communication between employees and managers. ManageMe's purpose is to fill in those cracks. With one, simple app managers can keep track of the day-to-day updates in the workplace without having to dig through hundreds of emails. As managers update maintenance concerns, general announcements, and key reminders, employees can stay in the loop without having to ask the same questions over and over again. Managers can even authorize trusted employees to make real-time updates the managers might miss since they aren't always on the floor. Make managing easier with ManageMe!
+Anyone who's worked a part-time job at a restaurant, retail store, or local grocer can relate to frustrations at work. Even in great work environments, simple things fall through the cracks due to poor communication between employees and managers. CrewComms's purpose is to fill in those cracks. With one, simple app managers can keep track of the day-to-day updates in the workplace without having to dig through hundreds of emails. As managers update maintenance concerns, general announcements, and key reminders, employees can stay in the loop without having to ask the same questions over and over again. Managers can even authorize trusted employees to make real-time updates the managers might miss since they aren't always on the floor. Make managing easier with CrewComms!
 
 ### Design
 
-![Design image](ManageMeSequenceDiagram.png)
+![Design image](CrewCommsSequenceDiagram.png)
 
 This is a rough diagram of the key features of the app. Obviously some steps are missing in this process, and the exact way these tools are worked may be changed for convenience to the user. 
 
