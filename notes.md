@@ -14,7 +14,11 @@ This file represents what I have learned about web programming.
 ## AWS
 
 http://98.94.163.10/
+http://crewcomms.click
 
+ssh -i .\AWSKeyPair.pem ubuntu@crewcomms.click
+
+vi CaddyFileName to edit ports and links
 
 ## HTML
 
