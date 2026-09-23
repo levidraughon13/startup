@@ -18,7 +18,7 @@ Anyone who's worked a part-time job at a restaurant, retail store, or local groc
 
 ### Design
 
-![Design image](CrewCommsSequenceDiagram.png)
+![Design image](ManageMeSequenceDiagram.png)
 
 This is a rough diagram of the key features of the app. Obviously some steps are missing in this process, and the exact way these tools are worked may be changed for convenience to the user. 
 
@@ -69,16 +69,16 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **HTML pages** - I did not complete this part of the deliverable.
-- [ ] **Proper HTML element usage** - I did not complete this part of the deliverable.
-- [ ] **Links** - I did not complete this part of the deliverable.
-- [ ] **Text** - I did not complete this part of the deliverable.
-- [ ] **3rd party API placeholder** - I did not complete this part of the deliverable.
-- [ ] **Images** - I did not complete this part of the deliverable.
-- [ ] **Login placeholder** - I did not complete this part of the deliverable.
-- [ ] **DB data placeholder** - I did not complete this part of the deliverable.
-- [ ] **WebSocket placeholder** - I did not complete this part of the deliverable.
+- [x] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **HTML pages** - Have login page as index, with a report page, dashboard page, and org selection page. The transitions between pages are there, but will be changes once login functionality is added.
+- [x] **Proper HTML element usage** - Use of various sized headers, input elements, tables, and hyperlinks
+- [x] **Links** - Have links between pages as placeholders for now, things will change with login functionality.
+- [x] **Text** - Useful titles/header info, table labels, and hyperlink text.
+- [x] **3rd party API placeholder** - Google Maps to give directions to addresses in organizations.html
+- [x] **Images** - CrewComms logo
+- [x] **Login placeholder** - index.html page
+- [x] **DB data placeholder** - dashboard.html page
+- [x] **WebSocket placeholder** - ability to delete items on dashboard
 
 ## 🚀 CSS deliverable
 

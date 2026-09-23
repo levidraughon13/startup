@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Report an Issue</title>
+</head>
+<body>
+	<header>
+		<h1><a href="index.html" aria-label="CrewComms home"><img src="CrewCommsLogo.png" alt="CrewComms" width="300" height="auto"></a></h1>
+	</header>
+	<nav>
+		<a href="index.html">Home</a>
+	</nav>
+	<main>
+		<h2>Report an Issue</h2>
+		<form action="#" method="post">
+			<label for="name">Name (optional):</label>
+			<input type="text" id="name" name="name">
+
+			<label for="contact">Contact Info (phone or email, optional):</label>
+			<input type="text" id="contact" name="contact">
+
+			<label for="report-type">Report Type:</label>
+			<select id="report-type" name="report-type" required>
+				<option value="">Select a report type</option>
+				<option value="maintenance">Maintenance Report</option>
+				<option value="complaint">Complaint</option>
+			</select>
+
+			<fieldset>
+				<legend>Reporter Type (required):</legend>
+				<label><input type="radio" name="reporter-type" value="employee" required> Employee</label>
+				<label><input type="radio" name="reporter-type" value="customer"> Customer</label>
+			</fieldset>
+
+			<label for="description">Describe the issue:</label>
+			<textarea id="description" name="description" rows="6" required></textarea>
+
+			<button type="submit">Submit</button>
+		</form>
+	</main>
+</body>
+</html>

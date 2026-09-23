@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CrewComms Dashboard</title>
+</head>
+<body>
+	<header>
+		<a href="index.html" aria-label="CrewComms home"><img src="CrewCommsLogo.png" alt="CrewComms" width="300" height="auto"></a>
+	</header>
+    <nav aria-label="Main navigation">
+        <a href="index.html">Home</a>
+		<a href="organizations.html">Organizations</a>
+	    <a href="report.html">Report an Issue</a>
+	</nav>
+	<main>
+		<h1>Dashboard</h1>
+		<h2>[Organization Name]</h2>
+
+		<section aria-labelledby="announcements-title">
+			<h2 id="announcements-title">Announcements</h2>
+			<table>
+				<thead>
+					<tr>
+						<th scope="col">Title</th>
+						<th scope="col">Date</th>
+						<th scope="col">Details</th>
+						<th scope="col">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="3">No announcements available.</td>
+						<td><button type="button" disabled aria-label="Delete announcement">Delete</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+
+		<section aria-labelledby="maintenance-title">
+			<h2 id="maintenance-title">Maintenance Issues</h2>
+			<table>
+				<thead>
+					<tr>
+						<th scope="col">Issue</th>
+						<th scope="col">Status</th>
+						<th scope="col">Date</th>
+						<th scope="col">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="3">No maintenance issues available.</td>
+						<td><button type="button" disabled aria-label="Delete maintenance issue">Delete</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+	</main>
+</body>
+</html>
