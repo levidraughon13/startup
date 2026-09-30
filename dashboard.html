@@ -25,53 +25,110 @@
 			<a href="organizations.html">Organizations</a>
 			<a href="dashboard.html">Dashboard (temp)</a>
 			<a href="report.html">Report an Issue (temp)</a>
-			<a href="index.html">Sign Out</a>
+			<a href="index.html">Login</a>
 		</nav>
 	</header>
     
-	<main>
-		<h1>Dashboard [Organization name]</h1>
-
-		<section class="Announcements" aria-labelledby="announcements-title">
-			<h4>Announcements</h4>
-			<table>
-                
-				<thead>
-					<tr>
-						<th scope="col">Title</th>
-						<th scope="col">Date</th>
-						<th scope="col">Details</th>
-						<th scope="col">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td colspan="3">No announcements available.</td>
-						<td><button type="button" disabled aria-label="Delete announcement">Delete</button></td>
-					</tr>
-				</tbody>
-			</table>
+	<main class="container py-5">
+		<section class="mb-4">
+			<h1 class="display-6 fw-bold mb-1">Dashboard</h1>
+			<p class="lead mb-0">[Organization name]</p>
 		</section>
 
-		<section class="Maintenance" aria-labelledby="maintenance-title">
-			<h4>Maintenance Issues</h4>
-			<table>
-                
-				<thead>
-					<tr>
-						<th scope="col">Issue</th>
-						<th scope="col">Status</th>
-						<th scope="col">Date</th>
-						<th scope="col">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td colspan="3">No maintenance issues available.</td>
-						<td><button type="button" disabled aria-label="Delete maintenance issue">Delete</button></td>
-					</tr>
-				</tbody>
-			</table>
+		<section
+			class="card shadow-sm mb-4"
+			aria-labelledby="announcements-title"
+		>
+			<div class="card-header bg-transparent">
+				<h2 id="announcements-title" class="h4 mb-0">
+					Announcements
+				</h2>
+			</div>
+
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<table class="table table-striped table-hover align-middle mb-0">
+						<caption class="visually-hidden">
+							Organization announcements
+						</caption>
+
+						<thead class="table-light">
+							<tr>
+								<th scope="col">Title</th>
+								<th scope="col">Date</th>
+								<th scope="col">Details</th>
+								<th scope="col">Actions</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr>
+								<td colspan="3">
+									No announcements.
+								</td>
+								<td>
+									<button
+										type="button"
+										class="btn btn-outline-danger btn-sm"
+										disabled
+										aria-label="Delete announcement"
+									>
+										Delete
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<section
+			class="card shadow-sm"
+			aria-labelledby="maintenance-title"
+		>
+			<div class="card-header bg-transparent">
+				<h2 id="maintenance-title" class="h4 mb-0">
+					Maintenance Issues
+				</h2>
+			</div>
+
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<table class="table table-striped table-hover align-middle mb-0">
+						<caption class="visually-hidden">
+							Organization maintenance issues
+						</caption>
+
+						<thead class="table-light">
+							<tr>
+								<th scope="col">Issue</th>
+								<th scope="col">Status</th>
+								<th scope="col">Date</th>
+								<th scope="col">Actions</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr>
+								<td colspan="3">
+									No maintenance issues.
+								</td>
+								<td>
+									<button
+										type="button"
+										class="btn btn-outline-danger btn-sm"
+										disabled
+										aria-label="Delete maintenance issue"
+									>
+										Delete
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</section>
 	</main>
 
