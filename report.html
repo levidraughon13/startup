@@ -29,33 +29,136 @@
 		</nav>
 	</header>
 	
-	<main>
-		<h2>Report an Issue</h2>
-		<form action="#" method="post">
-			<label for="name">Name (optional):</label>
-			<input type="text" id="name" name="name">
+	<main class="container py-5">
+		<section class="text-center mb-5">
+			<h1 class="display-5 fw-bold">Report an Issue</h1>
+			<p class="lead">
+				Help this organization stay informed by reporting an issue.
+			</p>
+		</section>
 
-			<label for="contact">Contact Info (phone or email, optional):</label>
-			<input type="text" id="contact" name="contact">
+		<section class="row justify-content-center">
+			<div class="col-12 col-md-9 col-lg-7">
+				<div class="card shadow-sm">
+					<div class="card-body p-4 p-md-5">
+						<h2 class="card-title text-center mb-4">
+							Issue Details
+						</h2>
 
-			<label for="report-type">Report Type:</label>
-			<select id="report-type" name="report-type" required>
-				<option value="">Select a report type</option>
-				<option value="maintenance">Maintenance Report</option>
-				<option value="complaint">Complaint</option>
-			</select>
+						<form action="#" method="post" class="row g-3">
+							<div class="col-12 col-md-6">
+								<label for="name" class="form-label">
+									Name <span class="text-muted">(optional)</span>
+								</label>
+								<input
+									type="text"
+									id="name"
+									name="name"
+									class="form-control"
+								>
+							</div>
 
-			<fieldset>
-				<legend>Reporter Type (required):</legend>
-				<label><input type="radio" name="reporter-type" value="employee" required> Employee</label>
-				<label><input type="radio" name="reporter-type" value="customer"> Customer</label>
-			</fieldset>
+							<div class="col-12 col-md-6">
+								<label for="contact" class="form-label">
+									Contact Info
+									<span class="text-muted">(optional)</span>
+								</label>
+								<input
+									type="text"
+									id="contact"
+									name="contact"
+									class="form-control"
+									placeholder="Phone or email"
+								>
+							</div>
 
-			<label for="description">Describe the issue:</label>
-			<textarea id="description" name="description" rows="6" required></textarea>
+							<div class="col-12">
+								<label for="report-type" class="form-label">
+									Report Type
+								</label>
+								<select
+									id="report-type"
+									name="report-type"
+									class="form-select"
+									required
+								>
+									<option value="">Select a report type</option>
+									<option value="maintenance">
+										Maintenance Report
+									</option>
+									<option value="complaint">
+										Complaint
+									</option>
+								</select>
+							</div>
 
-			<button type="submit">Submit</button>
-		</form>
+							<fieldset class="col-12">
+								<legend class="form-label fs-6">
+									Reporter Type
+								</legend>
+
+								<div class="d-flex flex-wrap gap-3">
+									<div class="form-check">
+										<input
+											class="form-check-input"
+											type="radio"
+											id="employee"
+											name="reporter-type"
+											value="employee"
+											required
+										>
+										<label
+											class="form-check-label"
+											for="employee"
+										>
+											Employee
+										</label>
+									</div>
+
+									<div class="form-check">
+										<input
+											class="form-check-input"
+											type="radio"
+											id="customer"
+											name="reporter-type"
+											value="customer"
+										>
+										<label
+											class="form-check-label"
+											for="customer"
+										>
+											Customer
+										</label>
+									</div>
+								</div>
+							</fieldset>
+
+							<div class="col-12">
+								<label for="description" class="form-label">
+									Describe the issue
+								</label>
+								<textarea
+									id="description"
+									name="description"
+									class="form-control"
+									rows="6"
+									required
+								></textarea>
+							</div>
+
+							<div class="col-12">
+								<button
+									type="submit"
+									class="btn btn-primary w-100"
+								>
+									Submit Report
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</section>
 	</main>
 
 	<footer class ="site-footer">
