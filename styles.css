@@ -24,7 +24,7 @@ body {
     display: flex;
     align-items: center;
     gap: 2rem;
-    padding: 1rem 2rem;
+    padding: 0 0;
 }
 
 
@@ -41,23 +41,30 @@ body {
 
 .site-nav {
     display: flex;
-    align-items: center;
-    gap: 1.5rem;
+    align-self: stretch;
+    align-items: stretch;
+    padding: 1rem, 1rem;
+    gap: 0;
     margin-left: auto;
-    flex-wrap: wrap;
     
 }
 
 .site-nav a {
+    display: flex;
+    padding: 0 1rem;
     text-decoration: none;
     font-weight: bold;
+    align-items: center;
     background-color: #243139;
+    color: white;
+    border-left: 2px solid rgba(25, 227, 227, 0.45);
 }
 
 .site-nav a:hover,
 .site-nav a:focus {
     color: #bde0fe;
     text-decoration: underline;
+    background-color: rgba(25, 227, 227, 0.12);
 }
 
 
@@ -72,13 +79,23 @@ body {
   color: #93c5fd;
 }
 
-
-.dashboard-layout {
-  display: flex;
-  gap: 2rem;
-  align-items: flex-start;
+.btn-primary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--primary-color);
 }
 
+.btn-primary:hover {
+    background-color: #12bcbc;
+    border-color: #12bcbc;
+    color: var(--primary-color);
+}
+
+.card {
+    background-color: var(--card-color);
+    border: none;
+    border-radius: 1rem;
+}
 
 img {
   max-width: 100%;
@@ -86,20 +103,7 @@ img {
 }
 
 @media (max-width: 768px) {
-  .feature-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-layout {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    flex-basis: auto;
-  }
-
-  .nav-links {
+  .site-nav {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
