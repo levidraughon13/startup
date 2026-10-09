@@ -12,7 +12,7 @@ export default function App() {
   <BrowserRouter>
   	<div className="body">
   	  <header className="site-header">
-			<NavLink className="site-brand" to="" aria-label="CrewComms home">
+			<NavLink className="site-brand" to="/" aria-label="CrewComms home">
 				<img className="site-logo" src="CrewCommsLogo.png" alt="CrewComms" />
 			</NavLink>
 			<nav className="site-nav" aria-label="Main navigation">

@@ -77,6 +77,12 @@ main {
     background-color: rgba(25, 227, 227, 0.12);
 }
 
+.site-nav a.active {
+  color: #bde0fe;
+  background-color: rgba(25, 227, 227, 0.12);
+  box-shadow: inset 0 -3px 0 #19e3e3;
+}
+
 
 .site-footer {
   padding: 2rem 1rem;
