@@ -20,7 +20,7 @@ export function Report() {
 
 						<form action="#" method="post" className="row g-3">
 							<div className="col-12 col-md-6">
-								<label for="name" className="form-label">
+								<label htmlFor="name" className="form-label">
 									Name <span className="text-muted">(optional)</span>
 								</label>
 								<input
@@ -32,7 +32,7 @@ export function Report() {
 							</div>
 
 							<div className="col-12 col-md-6">
-								<label for="contact" className="form-label">
+								<label htmlFor="contact" className="form-label">
 									Contact Info
 									<span className="text-muted">(optional)</span>
 								</label>
@@ -46,7 +46,7 @@ export function Report() {
 							</div>
 
 							<div className="col-12">
-								<label for="report-type" className="form-label">
+								<label htmlFor="report-type" className="form-label">
 									Report Type
 								</label>
 								<select
@@ -82,7 +82,7 @@ export function Report() {
 										/>
 										<label
 											className="form-check-label"
-											for="employee"
+											htmlFor="employee"
 										>
 											Employee
 										</label>
@@ -98,7 +98,7 @@ export function Report() {
 										/>
 										<label
 											className="form-check-label"
-											for="customer"
+											htmlFor="customer"
 										>
 											Customer
 										</label>
@@ -107,7 +107,7 @@ export function Report() {
 							</fieldset>
 
 							<div className="col-12">
-								<label for="description" className="form-label">
+								<label htmlFor="description" className="form-label">
 									Describe the issue
 								</label>
 								<textarea

@@ -19,12 +19,12 @@ export default function App() {
 				<NavLink className="nav-link" to="organizations">Organizations</NavLink>
 				<NavLink className="nav-link" to="dashboard">Dashboard</NavLink>
 				<NavLink className="nav-link" to="report">Report an Issue</NavLink>
-				<NavLink className="nav-link" to="">Login</NavLink>
+				<NavLink className="nav-link" to="/">Login</NavLink>
 			</nav>
 		</header>
 
 		<Routes>
-  			<Route path='/' element={<Login />} exact />
+  			<Route path='/' element={<Login />} />
   			<Route path='/dashboard' element={<Dashboard />} />
   			<Route path='/organizations' element={<Organizations />} />
   			<Route path='/report' element={<Report />} />
@@ -35,7 +35,7 @@ export default function App() {
 			<p>&copy; 2026 CrewComms</p>
 			<p>Levi Draughon <a href="https://github.com/levidraughon13/startup/tree/main">GitHub</a></p>
 		</footer>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>  
+		  
   	</div>
   </BrowserRouter>
   );

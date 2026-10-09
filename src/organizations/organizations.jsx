@@ -18,7 +18,7 @@ export function Organizations() {
 
 			<form className="row g-3">
 				<div className="col-12 col-md-8">
-					<label for="organization-search" className="form-label">
+					<label htmlFor="organization-search" className="form-label">
 						Search Organizations
 					</label>
 

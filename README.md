@@ -98,7 +98,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 - [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
 - [X] **Bundled using Vite** - Followed same instructions as for Simon.
-- [X] **Components** - Followed same instructions as for Simon.
+- [X] **Components** - Followed same instructions as for Simon. styles.css chanegd to app.css, serves as css for whole application.
 - [X] **Router** - Followed same instructions as for Simon.
 
 ## 🚀 React part 2: Reactivity deliverable
