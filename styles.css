@@ -4,7 +4,9 @@
   --background-color: #eafcfc;
   --card-color: #ffffff;
   --text-color: #1a2329;
-  --border-color: #52636b;
+  --footer-color: #52636b;
+  --border-color: rgba(25, 227, 227, 0.45);
+  --home-bg-color: rgb(255 255 255 / 60%);
 }
 
 * {
@@ -56,9 +58,9 @@ body {
     align-items: center;
     background-color: #243139;
     color: white;
-    border-left: 2px solid rgba(25, 227, 227, 0.45);
-    border-top: 2px solid rgba(25, 227, 227, 0.45);
-    border-bottom: 2px solid rgba(25, 227, 227, 0.45);
+    border-left: 2px solid var(--border-color);
+    border-top: 2px solid var(--border-color);
+    border-bottom: 2px solid var(--border-color);
 }
 
 .site-nav a:hover,
@@ -72,7 +74,7 @@ body {
 .site-footer {
   padding: 2rem 1rem;
   text-align: center;
-  background-color: var(--border-color);
+  background-color: var(--footer-color);
   color: white;
 }
 
@@ -82,7 +84,7 @@ body {
 
 /* ID selector */
 #home {
-  background-color: rgb(255 255 255 / 60%);
+  background-color: var(--home-bg-color);
   border-radius: 1rem;
   color: var(--primary-color);
 }
@@ -97,6 +99,22 @@ body {
     background-color: #12bcbc;
     border-color: #12bcbc;
     color: var(--primary-color);
+}
+
+.btn-primary:active,
+.btn-primary.active {
+    background-color: #12bcbc;
+    border-color: #12bcbc;
+    color: var(--primary-color);
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--primary-color);
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .card {
@@ -115,7 +133,6 @@ img {
   .site-header {
     flex-wrap: wrap;
   }
-
 
   .site-nav {
     width: 100%;

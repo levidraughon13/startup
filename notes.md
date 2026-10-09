@@ -26,4 +26,8 @@ Interesting things I have learned about HTML
 
 ## React
 
-Interesting things I have learned about React
+./deployReact.sh -k /c/Users/levid/csClasses/AWSKeyPair.pem -h crewcomms.click -s startup
+
+./deployFiles.sh -k /c/Users/levid/csClasses/AWSKeyPair.pem -h crewcomms.click -s startup
+
+./deployReact.sh -k /c/Users/levid/csClasses/AWSKeyPair.pem -h crewcomms.click -s simon
