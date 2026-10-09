@@ -14,10 +14,17 @@
 }
 
 .body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   margin: 0;
   background-color: var(--background-color);
   color: var(--text-color);
   font-family: "Inter", sans-serif;
+}
+
+main {
+  flex: 1;
 }
 
 .site-header {

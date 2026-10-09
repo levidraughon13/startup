@@ -1,31 +1,46 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
+import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
+import { Login } from './login/login';
+import { Dashboard } from './dashboard/dashboard';
+import { Organizations } from './organizations/organizations';
+import { Report } from './report/report';
 
 export default function App() {
   return (
-  <div className="body bg-dark text-light">
-    <header className="site-header">
-		<a className="site-brand" href="index.html" aria-label="CrewComms home">
-			<img className="site-logo" src="CrewCommsLogo.png" alt="CrewComms" />
-		</a>
-		<nav className="site-nav" aria-label="Main navigation">
-			<a className="nav-link" href="organizations.html">Organizations</a>
-			<a className="nav-link" href="dashboard.html">Dashboard (temp)</a>
-			<a className="nav-link" href="report.html">Report an Issue (temp)</a>
-			<a className="nav-link" href="index.html">Login</a>
-		</nav>
-	</header>
+  <BrowserRouter>
+  	<div className="body bg-dark text-light">
+  	  <header className="site-header">
+			<NavLink className="site-brand" to="" aria-label="CrewComms home">
+				<img className="site-logo" src="CrewCommsLogo.png" alt="CrewComms" />
+			</NavLink>
+			<nav className="site-nav" aria-label="Main navigation">
+				<NavLink className="nav-link" to="organizations">Organizations</NavLink>
+				<NavLink className="nav-link" to="dashboard">Dashboard</NavLink>
+				<NavLink className="nav-link" to="report">Report an Issue</NavLink>
+				<NavLink className="nav-link" to="">Login</NavLink>
+			</nav>
+		</header>
 
-	<main>
-		App components go here
-	</main>
+		<Routes>
+  			<Route path='/' element={<Login />} exact />
+  			<Route path='/dashboard' element={<Dashboard />} />
+  			<Route path='/organizations' element={<Organizations />} />
+  			<Route path='/report' element={<Report />} />
+  			<Route path='*' element={<NotFound />} />
+		</Routes>
 
-	<footer className="site-footer">
-		<p>&copy; 2026 CrewComms</p>
-		<p>Levi Draughon <a href="https://github.com/levidraughon13/startup/tree/main">GitHub</a></p>
-	</footer>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>  
-  </div>
+		<footer className="site-footer">
+			<p>&copy; 2026 CrewComms</p>
+			<p>Levi Draughon <a href="https://github.com/levidraughon13/startup/tree/main">GitHub</a></p>
+		</footer>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>  
+  	</div>
+  </BrowserRouter>
   );
+}
+
+function NotFound() {
+  return <main className="container-fluid bg-secondary text-center">404: Return to sender. Address unknown.</main>;
 }
