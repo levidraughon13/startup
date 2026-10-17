@@ -1,7 +1,37 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-export function Login() {
-  return (
+export function Login({ onLogin }) {
+	const [name, setName] = React.useState('');
+	const [password, setPassword] = React.useState('');
+	const navigate = useNavigate();
+
+	function handleLogin(event) {
+		event.preventDefault();
+		// Handle login logic here
+		localStorage.setItem('username', name);
+		localStorage.setItem('password', password);
+		onLogin(name);
+		navigate('/account');
+	}
+
+	function handleRegister(event) {
+		event.preventDefault();
+		localStorage.setItem('username', name);
+		localStorage.setItem('password', password);
+		onLogin(name);
+		navigate('/account');
+	}
+	function loginTextChange(event) {
+		setName(event.target.value);
+	}
+
+	function passwordTextChange(event) {
+		setPassword(event.target.value);
+	}
+
+
+	return (
     <main className="container py-5">
 		<section id="home" className="text-center py-5 mb-5">
 			<h1 className="display-5 fw-bold">Welcome to CrewComms</h1>
@@ -27,6 +57,7 @@ export function Login() {
 									name="username"
 									className="form-control"
 									placeholder="Username"
+									onChange={loginTextChange}
 								/>
 							</div>
 
@@ -40,17 +71,23 @@ export function Login() {
 									name="password"
 									className="form-control"
 									placeholder="Password"
+									onChange={passwordTextChange}
 								/>
 							</div>
 
-							<button type="submit" className="btn btn-primary w-100">
-								Log In
-							</button>
+							<div className="account-buttons">
+								<button onClick={handleLogin} type="submit" className="btn btn-primary w-100">
+									Log In
+								</button>
+								<button onClick={handleRegister} type="submit" className="btn btn-primary w-100">
+									Register
+								</button>
+							</div>
 						</form>
 					</div>
 				</div>
 			</div>
 		</section>
-	</main>
+	</main>		
   );
 }

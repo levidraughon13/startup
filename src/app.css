@@ -130,6 +130,11 @@ main {
     cursor: not-allowed;
 }
 
+.account-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
 .card {
     background-color: var(--card-color);
     border: none;
