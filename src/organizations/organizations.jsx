@@ -1,4 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
+function getOrganizationMembers(organization) {
+  if (Array.isArray(organization.members)) {
+    return organization.members;
+  }
+
+  return organization.admin
+    ? [{ username: organization.admin, role: 'admin' }]
+    : [];
+}
 
 function loadOrganizations() {
   try {
@@ -15,6 +26,9 @@ export function Organizations() {
   const [name, setName] = React.useState('');
   const [address, setAddress] = React.useState('');
   const [authMessage, setAuthMessage] = React.useState('');
+  const [membershipMessage, setMembershipMessage] = React.useState('');
+  const navigate = useNavigate();
+  const currentUser = localStorage.getItem('username');
 
   React.useEffect(() => {
     localStorage.setItem('organizations', JSON.stringify(organizations));
@@ -34,6 +48,7 @@ export function Organizations() {
       name: name.trim(),
       address: address.trim(),
       admin,
+      members: [{ username: admin, role: 'admin' }],
     };
 
     setOrganizations(current => [...current, newOrganization]);
@@ -47,6 +62,47 @@ export function Organizations() {
       event.preventDefault();
       setAuthMessage('You must be logged in to add an organization.');
     }
+  }
+
+  function handleMembershipToggle(organizationId) {
+    const username = localStorage.getItem('username');
+    if (!username) {
+      navigate('/login');
+      return;
+    }
+
+    const organization = organizations.find(item => item.id === organizationId);
+    if (!organization) {
+      return;
+    }
+
+    const members = getOrganizationMembers(organization);
+    const currentMember = members.find(member => member.username === username);
+    if (currentMember?.role === 'admin') {
+      setMembershipMessage('Admins cannot leave organizations.');
+      return;
+    }
+
+    setMembershipMessage('');
+    setOrganizations(current =>
+      current.map(item => {
+        if (item.id !== organizationId) {
+          return item;
+        }
+
+        const currentMembers = getOrganizationMembers(item);
+        const isMember = currentMembers.some(
+          member => member.username === username
+        );
+
+        return {
+          ...item,
+          members: isMember
+            ? currentMembers.filter(member => member.username !== username)
+            : [...currentMembers, { username, role: 'viewer' }],
+        };
+      })
+    );
   }
 
   const filteredOrganizations = organizations.filter(organization =>
@@ -165,13 +221,14 @@ export function Organizations() {
                     <th scope="col">Organization Name</th>
                     <th scope="col">Address</th>
                     <th scope="col">Location</th>
+                    <th scope="col">Membership</th>
                   </tr>
                 </thead>
 
                 <tbody>
                   {filteredOrganizations.length === 0 ? (
                     <tr>
-                      <td colSpan={3}>
+                      <td colSpan={4}>
                         {organizations.length === 0
                           ? 'No organizations have been added.'
                           : 'No organizations match your search.'}
@@ -194,6 +251,22 @@ export function Organizations() {
                             View location
                           </a>
                         </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="btn btn-secondary btn-sm"
+                            onClick={() =>
+                              handleMembershipToggle(organization.id)
+                            }
+                          >
+                            {currentUser &&
+                            getOrganizationMembers(organization).some(
+                              member => member.username === currentUser
+                            )
+                              ? 'Leave'
+                              : 'Join'}
+                          </button>
+                        </td>
                       </tr>
                     ))
                   )}
@@ -202,6 +275,11 @@ export function Organizations() {
             </div>
           </div>
         </div>
+        {membershipMessage && (
+          <p className="small text-danger mt-2 mb-0" role="alert">
+            {membershipMessage}
+          </p>
+        )}
       </section>
     </main>
   );
