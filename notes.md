@@ -22,7 +22,7 @@ vi CaddyFileName to edit ports and links
 
 ## HTML
 
-Interesting things I have learned about HTML
+
 
 ## React
 

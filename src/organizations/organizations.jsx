@@ -1,85 +1,208 @@
 import React from 'react';
 
+function loadOrganizations() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('organizations') || '[]');
+    return Array.isArray(saved) ? saved : [];
+  } catch {
+    return [];
+  }
+}
+
 export function Organizations() {
+  const [organizations, setOrganizations] = React.useState(loadOrganizations);
+  const [search, setSearch] = React.useState('');
+  const [name, setName] = React.useState('');
+  const [address, setAddress] = React.useState('');
+  const [authMessage, setAuthMessage] = React.useState('');
+
+  React.useEffect(() => {
+    localStorage.setItem('organizations', JSON.stringify(organizations));
+  }, [organizations]);
+
+  function handleAddOrganization(event) {
+    event.preventDefault();
+
+    const admin = localStorage.getItem('username');
+    if (!admin) {
+      setAuthMessage('You must be logged in to add an organization.');
+      return;
+    }
+
+    const newOrganization = {
+      id: crypto.randomUUID(),
+      name: name.trim(),
+      address: address.trim(),
+      admin,
+    };
+
+    setOrganizations(current => [...current, newOrganization]);
+    setName('');
+    setAddress('');
+    setAuthMessage('');
+  }
+
+  function handleAddClick(event) {
+    if (!localStorage.getItem('username')) {
+      event.preventDefault();
+      setAuthMessage('You must be logged in to add an organization.');
+    }
+  }
+
+  const filteredOrganizations = organizations.filter(organization =>
+    `${organization.name} ${organization.address}`
+      .toLowerCase()
+      .includes(search.trim().toLowerCase())
+  );
+
   return (
     <main className="container py-5">
-		<section className="text-center mb-5">
-			<h1 className="display-5 fw-bold">Organizations</h1>
-			<p className="lead">
-				Find and connect with your workplace or favorite business.
-			</p>
-		</section>
+      <section className="text-center mb-5">
+        <h1 className="display-5 fw-bold">Organizations</h1>
+        <p className="lead">
+          Find and connect with your workplace or favorite business.
+        </p>
+      </section>
 
-		<section
-			aria-labelledby="organization-search-heading"
-			className="mb-4"
-		>
+      <section aria-labelledby="organization-search-heading" className="mb-4">
+        <h2 id="organization-search-heading" className="visually-hidden">
+          Search organizations
+        </h2>
 
+        <form
+          className="row g-3"
+          onSubmit={event => event.preventDefault()}
+        >
+          <div className="col-12 col-md-8">
+            <label htmlFor="organization-search" className="form-label">
+              Search Organizations
+            </label>
+            <input
+              type="search"
+              id="organization-search"
+              name="organization-search"
+              className="form-control"
+              placeholder="Search organizations"
+              value={search}
+              onChange={event => setSearch(event.target.value)}
+            />
+          </div>
 
-			<form className="row g-3">
-				<div className="col-12 col-md-8">
-					<label htmlFor="organization-search" className="form-label">
-						Search Organizations
-					</label>
+          <div className="col-12 col-md-4 d-flex align-items-end">
+            <button type="submit" className="btn btn-primary w-100">
+              Search
+            </button>
+          </div>
+        </form>
+      </section>
 
-					<input
-						type="search"
-						id="organization-search"
-						name="organization-search"
-						className="form-control"
-						placeholder="Search organizations"
-					/>
-				</div>
+      <section aria-labelledby="add-organization-heading" className="mb-5">
+        <h2 id="add-organization-heading" className="h4">
+          Add an Organization
+        </h2>
 
-				<div className="col-12 col-md-4 d-flex align-items-end">
-					<button type="submit" className="btn btn-primary w-100">
-						Search
-					</button>
-				</div>
-			</form>
-		</section>
+        <form className="row g-3" onSubmit={handleAddOrganization}>
+          <div className="col-12 col-md-5">
+            <label htmlFor="new-organization-name" className="visually-hidden">
+              Organization name
+            </label>
+            <input
+              type="text"
+              id="new-organization-name"
+              name="organizationName"
+              className="form-control"
+              placeholder="Organization Name"
+              value={name}
+              onChange={event => setName(event.target.value)}
+              required
+            />
+          </div>
 
-		<section aria-labelledby="organization-list-heading">
-			<div className="card shadow-sm">
-				<div className="card-body p-0">
-					<div className="table-responsive">
-						<table className="table table-striped table-hover align-middle mb-0">
-							<caption
-								id="organization-list-heading"
-								className="caption-top px-4 pt-3"
-							>
-								Registered organizations
-							</caption>
+          <div className="col-12 col-md-5">
+            <label
+              htmlFor="new-organization-address"
+              className="visually-hidden"
+            >
+              Organization address
+            </label>
+            <input
+              type="text"
+              id="new-organization-address"
+              name="organizationAddress"
+              className="form-control"
+              placeholder="Organization Address"
+              value={address}
+              onChange={event => setAddress(event.target.value)}
+              required
+            />
+          </div>
 
-							<thead>
-								<tr>
-									<th scope="col">Organization Name</th>
-									<th scope="col">Address</th>
-									<th scope="col">Directions</th>
-								</tr>
-							</thead>
+          <div className="col-12 col-md-2 d-flex align-items-end">
+            <button
+              type="submit"
+              className="btn btn-primary w-100"
+              onClick={handleAddClick}
+            >
+              Add
+            </button>
+          </div>
+        </form>
+        {authMessage && (
+          <p className="small text-danger mt-2 mb-0" role="alert">
+            {authMessage}
+          </p>
+        )}
+      </section>
 
-							<tbody>
-								<tr>
-									<td>Example Organization</td>
-									<td>123 Main Street</td>
-									<td>
-										<a
-											className="btn btn-primary btn-sm"
-											href="https://www.google.com/maps/dir/?api=1&destination=123%20Main%20Street"
-											target="_blank"
-											rel="noopener noreferrer"
-										>
-											Get directions
-										</a>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-		</section>
-	</main>
+      <section aria-labelledby="organization-list-heading">
+        <div className="card shadow-sm">
+          <div className="card-body p-0">
+            <div className="table-responsive">
+              <table className="table table-striped table-hover align-middle mb-0">
+
+                <thead>
+                  <tr>
+                    <th scope="col">Organization Name</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Location</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredOrganizations.length === 0 ? (
+                    <tr>
+                      <td colSpan={3}>
+                        {organizations.length === 0
+                          ? 'No organizations have been added.'
+                          : 'No organizations match your search.'}
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredOrganizations.map(organization => (
+                      <tr key={organization.id}>
+                        <td>{organization.name}</td>
+                        <td>{organization.address}</td>
+                        <td>
+                          <a
+                            className="btn btn-primary btn-sm"
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                              organization.address
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            View location
+                          </a>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
