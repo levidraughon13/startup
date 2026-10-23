@@ -1,15 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
-function getOrganizationMembers(organization) {
-  if (Array.isArray(organization.members)) {
-    return organization.members;
-  }
-
-  return organization.admin
-    ? [{ username: organization.admin, role: 'admin' }]
-    : [];
-}
+import { getOrganizationMembers } from './organizationUtils';
 
 function loadOrganizations() {
   try {
