@@ -10,7 +10,7 @@ export function Login({ onLogin }) {
 		event.preventDefault();
 		// Handle login logic here
 		localStorage.setItem('username', name);
-		localStorage.setItem('password', password);
+		localStorage.setItem('password', 'mock password');
 		onLogin(name);
 		navigate('/account');
 	}
@@ -18,7 +18,7 @@ export function Login({ onLogin }) {
 	function handleRegister(event) {
 		event.preventDefault();
 		localStorage.setItem('username', name);
-		localStorage.setItem('password', password);
+		localStorage.setItem('password', 'mock password');
 		onLogin(name);
 		navigate('/account');
 	}

@@ -1,6 +1,62 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 export function Report() {
+  const location = useLocation();
+  const organizationId = location.state?.organizationId;
+  const [submissionMessage, setSubmissionMessage] = React.useState('');
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    if (!organizationId) {
+      setSubmissionMessage('Unable to submit report: no organization was selected.');
+      return;
+    }
+
+    const formData = new FormData(event.currentTarget);
+    const report = {
+      id: crypto.randomUUID(),
+      date: new Date().toISOString(),
+      name: formData.get('name'),
+      contact: formData.get('contact'),
+      reportType: formData.get('report-type'),
+      reporterType: formData.get('reporter-type'),
+      description: formData.get('description'),
+    };
+
+    try {
+      const organizations = JSON.parse(
+        localStorage.getItem('organizations') || '[]'
+      );
+      if (!Array.isArray(organizations)) {
+        throw new Error('Saved organizations data is invalid.');
+      }
+
+      const organizationIndex = organizations.findIndex(
+        organization => organization.id === organizationId
+      );
+      if (organizationIndex === -1) {
+        setSubmissionMessage('Unable to submit report: organization not found.');
+        return;
+      }
+
+      const organization = organizations[organizationIndex];
+      const feedbackReports = Array.isArray(organization.feedbackReports)
+        ? organization.feedbackReports
+        : [];
+      organizations[organizationIndex] = {
+        ...organization,
+        feedbackReports: [...feedbackReports, report],
+      };
+      localStorage.setItem('organizations', JSON.stringify(organizations));
+      event.currentTarget.reset();
+      setSubmissionMessage('Report submitted successfully.');
+    } catch (error) {
+      setSubmissionMessage(`Unable to submit report: ${error.message}`);
+    }
+  }
+
   return (
     <main className="container py-5">
 		<section className="text-center mb-5">
@@ -18,7 +74,7 @@ export function Report() {
 							Issue Details
 						</h2>
 
-						<form action="#" method="post" className="row g-3">
+						<form action="#" method="post" className="row g-3" onSubmit={handleSubmit}>
 							<div className="col-12 col-md-6">
 								<label htmlFor="name" className="form-label">
 									Name <span className="text-muted">(optional)</span>
@@ -128,6 +184,11 @@ export function Report() {
 								</button>
 							</div>
 						</form>
+						{submissionMessage && (
+							<p className="small mt-3 mb-0" role="status">
+								{submissionMessage}
+							</p>
+						)}
 					</div>
 				</div>
 			</div>

@@ -40,6 +40,9 @@ export function Organizations() {
       address: address.trim(),
       admin,
       members: [{ username: admin, role: 'admin' }],
+	  announcements: [],
+	  maintenanceRequests: [],
+	  feedbackReports: [],
     };
 
     setOrganizations(current => [...current, newOrganization]);
@@ -111,37 +114,7 @@ export function Organizations() {
         </p>
       </section>
 
-      <section aria-labelledby="organization-search-heading" className="mb-4">
-        <h2 id="organization-search-heading" className="visually-hidden">
-          Search organizations
-        </h2>
-
-        <form
-          className="row g-3"
-          onSubmit={event => event.preventDefault()}
-        >
-          <div className="col-12 col-md-8">
-            <label htmlFor="organization-search" className="form-label">
-              Search Organizations
-            </label>
-            <input
-              type="search"
-              id="organization-search"
-              name="organization-search"
-              className="form-control"
-              placeholder="Search organizations"
-              value={search}
-              onChange={event => setSearch(event.target.value)}
-            />
-          </div>
-
-          <div className="col-12 col-md-4 d-flex align-items-end">
-            <button type="submit" className="btn btn-primary w-100">
-              Search
-            </button>
-          </div>
-        </form>
-      </section>
+      
 
       <section aria-labelledby="add-organization-heading" className="mb-5">
         <h2 id="add-organization-heading" className="h4">
@@ -201,6 +174,37 @@ export function Organizations() {
         )}
       </section>
 
+
+	  <section aria-labelledby="organization-search-heading" className="mb-4">
+        <h2 id="organization-search-heading" className="visually-hidden">
+          Search organizations
+        </h2>
+
+        <form
+          className="row g-3"
+          onSubmit={event => event.preventDefault()}
+        >
+          <div className="col-12 col-md-8">
+            <input
+              type="search"
+              id="organization-search"
+              name="organization-search"
+              className="form-control"
+              placeholder="Search organizations"
+              value={search}
+              onChange={event => setSearch(event.target.value)}
+            />
+          </div>
+
+          <div className="col-12 col-md-4 d-flex align-items-end">
+            <button type="submit" className="btn btn-primary w-100">
+              Search
+            </button>
+          </div>
+        </form>
+      </section>
+
+
       <section aria-labelledby="organization-list-heading">
         <div className="card shadow-sm">
           <div className="card-body p-0">
@@ -243,6 +247,17 @@ export function Organizations() {
                           </a>
                         </td>
                         <td>
+                          <button
+                            type="button"
+                            className="btn btn-primary btn-sm me-1"
+                            onClick={() =>
+                              navigate('/dashboard', {
+                                state: { organizationId: organization.id },
+                              })
+                            }
+                          >
+                            Dashboard
+                          </button>
                           <button
                             type="button"
                             className="btn btn-secondary btn-sm"

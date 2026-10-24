@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getOrganizationMembers } from '../organizations/organizationUtils';
 
 function loadOrganizations() {
@@ -14,6 +15,7 @@ export function Account() {
     const [username] = React.useState(localStorage.getItem('username') || null);
     const [organizations, setOrganizations] = React.useState(loadOrganizations);
     const [organizationToDelete, setOrganizationToDelete] = React.useState(null);
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         localStorage.setItem('organizations', JSON.stringify(organizations));
@@ -95,6 +97,19 @@ export function Account() {
                                         <td>{organization.name}</td>
                                         <td>{role}</td>
                                         <td>
+                                            <button
+                                                type="button"
+                                                className="btn btn-primary btn-sm me-1"
+                                                onClick={() =>
+                                                    navigate('/dashboard', {
+                                                        state: {
+                                                            organizationId: organization.id,
+                                                        },
+                                                    })
+                                                }
+                                            >
+                                                Dashboard
+                                            </button>
                                             {role === 'admin' ? (
                                                 <button
                                                     type="button"

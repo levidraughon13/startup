@@ -24,8 +24,9 @@ export default function App() {
 			</NavLink>
 			<nav className="site-nav" aria-label="Main navigation">
 				<NavLink className="nav-link" to="organizations">Organizations</NavLink>
-				<NavLink className="nav-link" to="dashboard">Dashboard</NavLink>
-				<NavLink className="nav-link" to="report">Report an Issue</NavLink>
+				{/*<NavLink className="nav-link" to="dashboard">Dashboard</NavLink>
+				<NavLink className="nav-link" to="report">Report an Issue</NavLink>*/}
+				{username && <NavLink className="nav-link" to="account">Account</NavLink>}
 				{ username && <NavLink onClick={logout} className="nav-link" to="/login">Logout</NavLink> }
 				{ !username && <NavLink className="nav-link" to="/login">Login</NavLink> }
 			</nav>
