@@ -1,15 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getOrganizationMembers } from './organizationUtils';
-
-function loadOrganizations() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('organizations') || '[]');
-    return Array.isArray(saved) ? saved : [];
-  } catch {
-    return [];
-  }
-}
+import {
+  getOrganizationMembers,
+  loadOrganizations,
+} from './organizationUtils';
 
 export function Organizations() {
   const [organizations, setOrganizations] = React.useState(loadOrganizations);
@@ -40,9 +34,9 @@ export function Organizations() {
       address: address.trim(),
       admin,
       members: [{ username: admin, role: 'admin' }],
-	  announcements: [],
-	  maintenanceRequests: [],
-	  feedbackReports: [],
+      announcements: [],
+      maintenanceRequests: [],
+      feedbackReports: [],
     };
 
     setOrganizations(current => [...current, newOrganization]);
@@ -114,8 +108,6 @@ export function Organizations() {
         </p>
       </section>
 
-      
-
       <section aria-labelledby="add-organization-heading" className="mb-5">
         <h2 id="add-organization-heading" className="h4">
           Add an Organization
@@ -174,8 +166,7 @@ export function Organizations() {
         )}
       </section>
 
-
-	  <section aria-labelledby="organization-search-heading" className="mb-4">
+      <section aria-labelledby="organization-search-heading" className="mb-4">
         <h2 id="organization-search-heading" className="visually-hidden">
           Search organizations
         </h2>
@@ -203,14 +194,11 @@ export function Organizations() {
           </div>
         </form>
       </section>
-
-
       <section aria-labelledby="organization-list-heading">
         <div className="card shadow-sm">
           <div className="card-body p-0">
             <div className="table-responsive">
               <table className="table table-striped table-hover align-middle mb-0">
-
                 <thead>
                   <tr>
                     <th scope="col">Organization Name</th>
