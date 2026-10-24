@@ -105,9 +105,9 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **All functionality implemented or mocked out** - I did not complete this part of the deliverable.
-- [ ] **Hooks** - I did not complete this part of the deliverable.
+- [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [X] **All functionality implemented or mocked out** - Login functionality is mocked up, basically everything is based around a database, so I use localStorage for most functionality
+- [X] **Hooks** - Many hooks are used to load the appropriate infomation based on login status and user permissions
 
 ## 🚀 Service deliverable
 
