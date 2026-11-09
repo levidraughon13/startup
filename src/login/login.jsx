@@ -2,29 +2,53 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export function Login({ onLogin }) {
-  const [name, setName] = React.useState('');
+  const [userName, setUserName] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [displayError, setDisplayError] = React.useState(null);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const navigate = useNavigate();
 
-  function handleLogin(event) {
+  async function handleLogin(event) {
     event.preventDefault();
-    // Handle login logic here
-    localStorage.setItem('username', name);
-    localStorage.setItem('password', 'mock password');
-    onLogin(name);
-    navigate('/account');
+    await loginOrRegister('/api/auth/login');
   }
 
-  function handleRegister(event) {
-    event.preventDefault();
-    localStorage.setItem('username', name);
-    localStorage.setItem('password', 'mock password');
-    onLogin(name);
-    navigate('/account');
+  async function handleRegister() {
+    await loginOrRegister('/api/auth/register');
+  }
+
+  async function loginOrRegister(endpoint) {
+    setDisplayError(null);
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        body: JSON.stringify({ username: userName, password }),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      });
+
+      if (!res.ok) {
+        const body = await res.json();
+        setDisplayError(body.msg || `Request failed (${res.status})`);
+        return;
+      }
+
+      localStorage.setItem('username', userName);
+      onLogin(userName);
+      navigate('/account');
+    } catch (error) {
+      console.error('Login or registration request failed:', error);
+      setDisplayError('Unable to connect. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function loginTextChange(event) {
-    setName(event.target.value);
+    setUserName(event.target.value);
   }
 
   function passwordTextChange(event) {
@@ -46,7 +70,7 @@ export function Login({ onLogin }) {
             <div className="card-body p-4">
               <h2 className="card-title text-center mb-4">Login</h2>
 
-              <form>
+              <form onSubmit={handleLogin}>
                 <div className="mb-3">
                   <label htmlFor="username" className="form-label">
                     Username
@@ -57,6 +81,9 @@ export function Login({ onLogin }) {
                     name="username"
                     className="form-control"
                     placeholder="Username"
+                    autoComplete="username"
+                    required
+                    value={userName}
                     onChange={loginTextChange}
                   />
                 </div>
@@ -71,27 +98,37 @@ export function Login({ onLogin }) {
                     name="password"
                     className="form-control"
                     placeholder="Password"
+                    autoComplete="current-password"
+                    required
+                    value={password}
                     onChange={passwordTextChange}
                   />
                 </div>
 
                 <div className="account-buttons">
                   <button
-                    onClick={handleLogin}
                     type="submit"
+                    disabled={isSubmitting || !userName.trim() || !password}
                     className="btn btn-primary w-100"
                   >
                     Log In
                   </button>
                   <button
+                    type="button"
                     onClick={handleRegister}
-                    type="submit"
+                    disabled={isSubmitting || !userName.trim() || !password}
                     className="btn btn-primary w-100"
                   >
                     Register
                   </button>
                 </div>
               </form>
+
+              {displayError && (
+                <p className="small text-danger mt-2 mb-0" role="alert">
+                  {displayError}
+                </p>
+              )}
             </div>
           </div>
         </div>

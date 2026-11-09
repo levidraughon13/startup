@@ -9,14 +9,21 @@ import { Report } from './report/report';
 import { Account } from './account/account';
 
 export default function App() {
-  const [username, setUsername] = React.useState(
+  const [userName, setUsername] = React.useState(
     localStorage.getItem('username') || null
   );
 
   function logout() {
-    localStorage.removeItem('username');
-    localStorage.removeItem('password');
-    setUsername(null);
+    fetch('/api/auth/logout', {
+      method: 'delete',
+    })
+      .catch(error => {
+        console.error('Error logging out:', error);
+      })
+      .finally(() => {
+        localStorage.removeItem('username');
+        setUsername(null);
+      });
   }
 
   return (
@@ -36,12 +43,12 @@ export default function App() {
             </NavLink>
             {/* <NavLink className="nav-link" to="dashboard">Dashboard</NavLink>
             <NavLink className="nav-link" to="report">Report an Issue</NavLink> */}
-            {username && (
+            {userName && (
               <NavLink className="nav-link" to="account">
                 Account
               </NavLink>
             )}
-            {username && (
+            {userName && (
               <NavLink
                 onClick={logout}
                 className="nav-link"
@@ -50,7 +57,7 @@ export default function App() {
                 Logout
               </NavLink>
             )}
-            {!username && (
+            {!userName && (
               <NavLink className="nav-link" to="/login">
                 Login
               </NavLink>
@@ -64,7 +71,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login onLogin={setUsername} />} />
           <Route path="/account" element={<Account />} />
-          {username ? (
+          {userName ? (
             <Route path="/" element={<Account />} />
           ) : (
             <Route path="/" element={<Login onLogin={setUsername} />} />

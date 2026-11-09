@@ -16,7 +16,7 @@ This file represents what I have learned about web programming.
 http://98.94.163.10/
 http://crewcomms.click
 
-ssh -i .\AWSKeyPair.pem ubuntu@crewcomms.click
+ssh -i /c/Users/levid/csClasses/AWSKeyPair.pem ubuntu@crewcomms.click
 
 vi CaddyFileName to edit ports and links
 
@@ -31,3 +31,7 @@ vi CaddyFileName to edit ports and links
 ./deployFiles.sh -k /c/Users/levid/csClasses/AWSKeyPair.pem -h crewcomms.click -s startup
 
 ./deployReact.sh -k /c/Users/levid/csClasses/AWSKeyPair.pem -h crewcomms.click -s simon
+
+## Service
+
+./deployService.sh -k /c/Users/levid/csClasses/AWSKeyPair.pem -h crewcomms.click -s startup
