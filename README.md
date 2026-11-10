@@ -114,13 +114,13 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
-- [ ] **Static middleware for frontend** - I did not complete this part of the deliverable.
-- [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
-- [ ] **Backend service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Frontend calls service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Supports registration, login, logout, and restricted endpoint** - I did not complete this part of the deliverable.
-- [ ] **Uses BCrypt to hash passwords** - I did not complete this part of the deliverable.
+- [X] **Node.js/Express HTTP service** - Completed.
+- [X] **Static middleware for frontend** - express.static('public') is used.
+- [X] **Calls to third party endpoints** - Random quote API on login and google maps link
+- [X] **Backend service endpoints** - Yes, so many endpoints.
+- [X] **Frontend calls service endpoints** - Yes, and made use of shared API client for authentication
+- [X] **Supports registration, login, logout, and restricted endpoint** - All apply easily.
+- [X] **Uses BCrypt to hash passwords** - hashing implemented, only hashed passwords saved.
 
 ## 🚀 DB deliverable
 

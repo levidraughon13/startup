@@ -7,7 +7,40 @@ export function Login({ onLogin }) {
   const [password, setPassword] = React.useState('');
   const [displayError, setDisplayError] = React.useState(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [quote, setQuote] = React.useState(null);
+  const [quoteError, setQuoteError] = React.useState(false);
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const controller = new AbortController();
+
+    async function fetchQuote() {
+      try {
+        const response = await fetch('https://dummyjson.com/quotes/random', {
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          throw new Error(`Quote request failed with status ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (typeof result.quote !== 'string' || typeof result.author !== 'string') {
+          throw new Error('Quote response did not contain a quote and author');
+        }
+
+        setQuote({ text: result.quote, author: result.author });
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          return;
+        }
+        console.error('Unable to fetch a motivational quote:', error);
+        setQuoteError(true);
+      }
+    }
+
+    fetchQuote();
+    return () => controller.abort();
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -46,6 +79,23 @@ export function Login({ onLogin }) {
         <p className="lead">
           The place to keep your team connected and informed.
         </p>
+      </section>
+
+      <section className="text-center mb-5" aria-live="polite">
+        {quote ? (
+          <figure>
+            <blockquote className="blockquote">
+              <p>“{quote.text}”</p>
+            </blockquote>
+            <figcaption className="blockquote-footer mb-0">
+              {quote.author}
+            </figcaption>
+          </figure>
+        ) : quoteError ? (
+          <p className="text-muted mb-0">A motivational quote is unavailable right now.</p>
+        ) : (
+          <p className="text-muted mb-0">Loading a motivational quote...</p>
+        )}
       </section>
 
       <section id="login" className="row justify-content-center">
