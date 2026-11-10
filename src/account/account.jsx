@@ -1,59 +1,88 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  getOrganizationMembers,
-  loadOrganizations,
-} from '../organizations/organizationUtils';
+  deleteOrganization,
+  getMyOrganizations,
+  leaveOrganization,
+} from '../api';
 
-export function Account() {
-  const [username] = React.useState(localStorage.getItem('username') || null);
-  const [organizations, setOrganizations] = React.useState(loadOrganizations);
+export function Account({ userName }) {
+  const [organizations, setOrganizations] = React.useState([]);
   const [organizationToDelete, setOrganizationToDelete] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [busyOrganizationId, setBusyOrganizationId] = React.useState(null);
+  const [errorMessage, setErrorMessage] = React.useState('');
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    localStorage.setItem('organizations', JSON.stringify(organizations));
-  }, [organizations]);
+    let isActive = true;
 
-  const userOrganizations = organizations.flatMap(organization => {
-    const member = getOrganizationMembers(organization).find(
-      item => item.username === username
-    );
-    return member ? [{ organization, role: member.role }] : [];
-  });
-
-  function handleLeave(organizationId) {
-    setOrganizations(current =>
-      current.map(organization => {
-        if (organization.id !== organizationId) {
-          return organization;
+    getMyOrganizations()
+      .then(items => {
+        if (isActive) {
+          setOrganizations(items);
         }
-
-        return {
-          ...organization,
-          members: getOrganizationMembers(organization).filter(
-            member => member.username !== username
-          ),
-        };
       })
-    );
+      .catch(error => {
+        console.error('Error loading your organizations:', error);
+        if (isActive) {
+          setErrorMessage(error.message || 'Unable to load your organizations.');
+        }
+      })
+      .finally(() => {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  async function handleLeave(organizationId) {
+    setErrorMessage('');
+    setBusyOrganizationId(organizationId);
+    try {
+      await leaveOrganization(organizationId);
+      setOrganizations(current =>
+        current.filter(organization => organization.id !== organizationId)
+      );
+    } catch (error) {
+      console.error('Error leaving organization:', error);
+      setErrorMessage(error.message || 'Unable to leave organization.');
+    } finally {
+      setBusyOrganizationId(null);
+    }
   }
 
-  function handleDelete() {
-    setOrganizations(current =>
-      current.filter(
-        organization => organization.id !== organizationToDelete.id
-      )
-    );
-    setOrganizationToDelete(null);
+  async function handleDelete() {
+    const organizationId = organizationToDelete.id;
+    setErrorMessage('');
+    setBusyOrganizationId(organizationId);
+    try {
+      await deleteOrganization(organizationId);
+      setOrganizations(current =>
+        current.filter(organization => organization.id !== organizationId)
+      );
+      setOrganizationToDelete(null);
+    } catch (error) {
+      console.error('Error deleting organization:', error);
+      setErrorMessage(error.message || 'Unable to delete organization.');
+    } finally {
+      setBusyOrganizationId(null);
+    }
   }
 
   return (
     <main className="container py-5">
       <section className="mb-4">
         <h1 className="display-6 fw-bold mb-1">Account</h1>
-        <p className="lead mb-0">Welcome, {username}!</p>
+        <p className="lead mb-0">Welcome, {userName}!</p>
       </section>
+      {errorMessage && (
+        <p className="text-danger" role="alert">{errorMessage}</p>
+      )}
 
       <section
         className="card shadow-sm mb-4"
@@ -81,15 +110,23 @@ export function Account() {
               </thead>
 
               <tbody>
-                {userOrganizations.length === 0 ? (
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={3}>Loading organizations...</td>
+                  </tr>
+                ) : errorMessage && organizations.length === 0 ? (
+                  <tr>
+                    <td colSpan={3}>Unable to load organizations.</td>
+                  </tr>
+                ) : organizations.length === 0 ? (
                   <tr>
                     <td colSpan={3}>No organizations.</td>
                   </tr>
                 ) : (
-                  userOrganizations.map(({ organization, role }) => (
+                  organizations.map(organization => (
                     <tr key={organization.id}>
                       <td>{organization.name}</td>
-                      <td>{role}</td>
+                      <td>{organization.role}</td>
                       <td>
                         <button
                           type="button"
@@ -104,10 +141,11 @@ export function Account() {
                         >
                           Dashboard
                         </button>
-                        {role === 'admin' ? (
+                        {organization.role === 'admin' ? (
                           <button
                             type="button"
                             className="btn btn-outline-danger btn-sm"
+                            disabled={busyOrganizationId !== null}
                             onClick={() =>
                               setOrganizationToDelete(organization)
                             }
@@ -118,6 +156,7 @@ export function Account() {
                           <button
                             type="button"
                             className="btn btn-outline-danger btn-sm"
+                            disabled={busyOrganizationId !== null}
                             onClick={() =>
                               handleLeave(organization.id)
                             }
@@ -169,6 +208,7 @@ export function Account() {
                   <button
                     type="button"
                     className="btn btn-danger"
+                    disabled={busyOrganizationId !== null}
                     onClick={handleDelete}
                   >
                     Yes

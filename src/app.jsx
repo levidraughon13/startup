@@ -7,23 +7,55 @@ import { Dashboard } from './dashboard/dashboard';
 import { Organizations } from './organizations/organizations';
 import { Report } from './report/report';
 import { Account } from './account/account';
+import { getCurrentUser, logoutUser } from './api';
 
 export default function App() {
-  const [userName, setUsername] = React.useState(
-    localStorage.getItem('username') || null
-  );
+  const [userName, setUsername] = React.useState(null);
+  const [authLoading, setAuthLoading] = React.useState(true);
+  const [authError, setAuthError] = React.useState('');
 
-  function logout() {
-    fetch('/api/auth/logout', {
-      method: 'delete',
-    })
+  React.useEffect(() => {
+    let isActive = true;
+
+    getCurrentUser()
+      .then(user => {
+        if (isActive) {
+          setUsername(user.username);
+        }
+      })
       .catch(error => {
-        console.error('Error logging out:', error);
+        if (isActive && error.status !== 401) {
+          console.error('Error checking the current session:', error);
+          setAuthError('Unable to verify your sign-in status.');
+        }
       })
       .finally(() => {
-        localStorage.removeItem('username');
-        setUsername(null);
+        if (isActive) {
+          setAuthLoading(false);
+          localStorage.removeItem('username');
+        }
       });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  function handleLogin(username) {
+    setUsername(username);
+    setAuthError('');
+  }
+
+  async function logout() {
+    setAuthError('');
+    try {
+      await logoutUser();
+      localStorage.removeItem('username');
+      setUsername(null);
+    } catch (error) {
+      console.error('Error logging out:', error);
+      setAuthError(error.message || 'Unable to log out. Please try again.');
+    }
   }
 
   return (
@@ -41,40 +73,82 @@ export default function App() {
             <NavLink className="nav-link" to="organizations">
               Organizations
             </NavLink>
-            {/* <NavLink className="nav-link" to="dashboard">Dashboard</NavLink>
-            <NavLink className="nav-link" to="report">Report an Issue</NavLink> */}
-            {userName && (
+            {!authLoading && userName && (
               <NavLink className="nav-link" to="account">
                 Account
               </NavLink>
             )}
-            {userName && (
+            {!authLoading && userName && (
               <NavLink
-                onClick={logout}
-                className="nav-link"
                 to="/login"
+                onClick={event => {
+                  event.preventDefault();
+                  logout();
+                }}
+                className="nav-link"
               >
                 Logout
               </NavLink>
             )}
-            {!userName && (
+            {!authLoading && !userName && (
               <NavLink className="nav-link" to="/login">
                 Login
               </NavLink>
             )}
+            {authLoading && <span className="nav-link">Checking session...</span>}
           </nav>
         </header>
 
+        {authError && (
+          <div className="container mt-3">
+            <p className="text-danger" role="alert">{authError}</p>
+          </div>
+        )}
+
         <Routes>
-          <Route path="/organizations" element={<Organizations />} />
+          <Route
+            path="/organizations"
+            element={
+              <Organizations userName={userName} authLoading={authLoading} />
+            }
+          />
           <Route path="/report" element={<Report />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/login" element={<Login onLogin={setUsername} />} />
-          <Route path="/account" element={<Account />} />
-          {userName ? (
-            <Route path="/" element={<Account />} />
+          <Route
+            path="/dashboard"
+            element={
+              authLoading ? (
+                <Loading />
+              ) : userName ? (
+                <Dashboard userName={userName} />
+              ) : (
+                <Login onLogin={handleLogin} />
+              )
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              authLoading ? <Loading /> : <Login onLogin={handleLogin} />
+            }
+          />
+          <Route
+            path="/account"
+            element={
+              authLoading ? (
+                <Loading />
+              ) : userName ? (
+                <Account userName={userName} />
+              ) : (
+                <Login onLogin={handleLogin} />
+              )
+            }
+          />
+          {authLoading ? (
+            <Route path="/" element={<Loading />} />
+          ) : userName ? (
+            <Route path="/" element={<Account userName={userName} />} />
           ) : (
-            <Route path="/" element={<Login onLogin={setUsername} />} />
+            <Route path="/" element={<Login onLogin={handleLogin} />} />
           )}
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -90,6 +164,14 @@ export default function App() {
         </footer>
       </div>
     </BrowserRouter>
+  );
+}
+
+function Loading() {
+  return (
+    <main className="container py-5" role="status">
+      Loading...
+    </main>
   );
 }
 

@@ -1,60 +1,113 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  getOrganizationMembers,
-  loadOrganizations,
+  createOrganization,
+  joinOrganization,
+  leaveOrganization,
+  loadOrganizationDirectory,
 } from './organizationUtils';
 
-export function Organizations() {
-  const [organizations, setOrganizations] = React.useState(loadOrganizations);
+export function Organizations({ userName, authLoading }) {
+  const [organizations, setOrganizations] = React.useState([]);
+  const [memberships, setMemberships] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isMembershipUpdating, setIsMembershipUpdating] = React.useState(false);
+  const [loadError, setLoadError] = React.useState('');
   const [search, setSearch] = React.useState('');
   const [name, setName] = React.useState('');
   const [address, setAddress] = React.useState('');
   const [authMessage, setAuthMessage] = React.useState('');
   const [membershipMessage, setMembershipMessage] = React.useState('');
   const navigate = useNavigate();
-  const currentUser = localStorage.getItem('username');
 
   React.useEffect(() => {
-    localStorage.setItem('organizations', JSON.stringify(organizations));
-  }, [organizations]);
+    let isActive = true;
 
-  function handleAddOrganization(event) {
+    if (authLoading) {
+      return () => {
+        isActive = false;
+      };
+    }
+
+    setIsLoading(true);
+    setLoadError('');
+    async function loadDirectory() {
+      try {
+        const data = await loadOrganizationDirectory(userName);
+        if (!isActive) {
+          return;
+        }
+
+        const membershipById = new Map(
+          data.memberships.map(membership => [membership.id, membership])
+        );
+        setOrganizations(
+          data.organizations.map(organization => {
+            const membership = membershipById.get(organization.id);
+            return {
+              ...organization,
+              members:
+                membership && userName
+                  ? [{ username: userName, role: membership.role }]
+                  : [],
+            };
+          })
+        );
+        setMemberships(data.memberships);
+      } catch (error) {
+        console.error('Error loading organizations:', error);
+        if (isActive) {
+          setLoadError(error.message || 'Unable to load organizations.');
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadDirectory();
+    return () => {
+      isActive = false;
+    };
+  }, [userName, authLoading]);
+
+  async function handleAddOrganization(event) {
     event.preventDefault();
 
-    const admin = localStorage.getItem('username');
-    if (!admin) {
+    if (!userName) {
       setAuthMessage('You must be logged in to add an organization.');
       return;
     }
 
-    const newOrganization = {
-      id: crypto.randomUUID(),
-      name: name.trim(),
-      address: address.trim(),
-      admin,
-      members: [{ username: admin, role: 'admin' }],
-      announcements: [],
-      maintenanceRequests: [],
-      feedbackReports: [],
-    };
-
-    setOrganizations(current => [...current, newOrganization]);
-    setName('');
-    setAddress('');
     setAuthMessage('');
+    try {
+      const organization = await createOrganization(name.trim(), address.trim());
+      setOrganizations(current => [
+        ...current,
+        { ...organization, members: [{ username: userName, role: 'admin' }] },
+      ]);
+      setMemberships(current => [
+        ...current,
+        { ...organization, role: 'admin' },
+      ]);
+      setName('');
+      setAddress('');
+    } catch (error) {
+      console.error('Error adding organization:', error);
+      setAuthMessage(error.message || 'Unable to add organization.');
+    }
   }
 
   function handleAddClick(event) {
-    if (!localStorage.getItem('username')) {
+    if (!userName) {
       event.preventDefault();
       setAuthMessage('You must be logged in to add an organization.');
     }
   }
 
-  function handleMembershipToggle(organizationId) {
-    const username = localStorage.getItem('username');
-    if (!username) {
+  async function handleMembershipToggle(organizationId) {
+    if (!userName) {
       navigate('/login');
       return;
     }
@@ -64,33 +117,57 @@ export function Organizations() {
       return;
     }
 
-    const members = getOrganizationMembers(organization);
-    const currentMember = members.find(member => member.username === username);
-    if (currentMember?.role === 'admin') {
+    const membership = memberships.find(item => item.id === organizationId);
+    if (membership?.role === 'admin') {
       setMembershipMessage('Admins cannot leave organizations.');
       return;
     }
 
     setMembershipMessage('');
-    setOrganizations(current =>
-      current.map(item => {
-        if (item.id !== organizationId) {
-          return item;
-        }
-
-        const currentMembers = getOrganizationMembers(item);
-        const isMember = currentMembers.some(
-          member => member.username === username
+    setIsMembershipUpdating(true);
+    try {
+      let updatedMemberships;
+      if (membership) {
+        await leaveOrganization(organizationId);
+        updatedMemberships = memberships.filter(
+          item => item.id !== organizationId
         );
+      } else {
+        const member = await joinOrganization(organizationId);
+        updatedMemberships = [
+          ...memberships,
+          { ...organization, role: member.role },
+        ];
+      }
 
-        return {
-          ...item,
-          members: isMember
-            ? currentMembers.filter(member => member.username !== username)
-            : [...currentMembers, { username, role: 'viewer' }],
-        };
-      })
-    );
+      setMemberships(updatedMemberships);
+      setOrganizations(current =>
+        current.map(item => {
+          if (item.id !== organizationId) {
+            return item;
+          }
+
+          const members = (item.members || []).filter(
+            member => member.username !== userName
+          );
+          const updatedMembership = updatedMemberships.find(
+            entry => entry.id === organizationId
+          );
+          if (updatedMembership) {
+            members.push({
+              username: userName,
+              role: updatedMembership.role,
+            });
+          }
+          return { ...item, members };
+        })
+      );
+    } catch (error) {
+      console.error('Error updating organization membership:', error);
+      setMembershipMessage(error.message || 'Unable to update membership.');
+    } finally {
+      setIsMembershipUpdating(false);
+    }
   }
 
   const filteredOrganizations = organizations.filter(organization =>
@@ -153,6 +230,7 @@ export function Organizations() {
             <button
               type="submit"
               className="btn btn-primary w-100"
+              disabled={isLoading || authLoading}
               onClick={handleAddClick}
             >
               Add
@@ -209,7 +287,17 @@ export function Organizations() {
                 </thead>
 
                 <tbody>
-                  {filteredOrganizations.length === 0 ? (
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={4}>Loading organizations...</td>
+                    </tr>
+                  ) : loadError ? (
+                    <tr>
+                      <td colSpan={4} className="text-danger">
+                        {loadError}
+                      </td>
+                    </tr>
+                  ) : filteredOrganizations.length === 0 ? (
                     <tr>
                       <td colSpan={4}>
                         {organizations.length === 0
@@ -249,13 +337,16 @@ export function Organizations() {
                           <button
                             type="button"
                             className="btn btn-secondary btn-sm"
+                            disabled={
+                              isMembershipUpdating || authLoading
+                            }
                             onClick={() =>
                               handleMembershipToggle(organization.id)
                             }
                           >
-                            {currentUser &&
-                            getOrganizationMembers(organization).some(
-                              member => member.username === currentUser
+                            {userName &&
+                            memberships.some(
+                              membership => membership.id === organization.id
                             )
                               ? 'Leave'
                               : 'Join'}

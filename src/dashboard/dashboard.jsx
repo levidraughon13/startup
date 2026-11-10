@@ -1,20 +1,31 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
+  addOrganizationItem,
+  deleteFeedbackReport,
+  deleteOrganizationItem as deleteOrganizationItemRequest,
+  getOrganization,
+  updateMemberRole,
+  updateOrganizationItem,
+} from '../api';
+import {
   getOrganizationMembers,
-  loadOrganizations,
 } from '../organizations/organizationUtils';
 
-export function Dashboard() {
+export function Dashboard({ userName }) {
   const location = useLocation();
   const navigate = useNavigate();
   const organizationId = location.state?.organizationId;
-  const [organizations, setOrganizations] = React.useState(loadOrganizations);
+  const [organizations, setOrganizations] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [operationError, setOperationError] = React.useState('');
   const [entryType, setEntryType] = React.useState('announcement');
   const [entryTitle, setEntryTitle] = React.useState('');
   const [entryDate, setEntryDate] = React.useState('');
   const [entryDetails, setEntryDetails] = React.useState('');
   const [entryStatus, setEntryStatus] = React.useState('');
+  const [entryError, setEntryError] = React.useState('');
+  const [isAddingEntry, setIsAddingEntry] = React.useState(false);
   const [memberToEdit, setMemberToEdit] = React.useState(null);
   const [memberRole, setMemberRole] = React.useState('');
   const [roleError, setRoleError] = React.useState('');
@@ -22,35 +33,74 @@ export function Dashboard() {
   const organization = organizations.find(item => item.id === organizationId);
 
   React.useEffect(() => {
-    localStorage.setItem('organizations', JSON.stringify(organizations));
-  }, [organizations]);
+    let isActive = true;
 
-  function deleteOrganizationItem(listName, itemIndex) {
-    if (!isAdmin) {
+    if (!organizationId) {
+      setOperationError('No organization was selected.');
+      setIsLoading(false);
+      return () => {
+        isActive = false;
+      };
+    }
+
+    getOrganization(organizationId)
+      .then(item => {
+        if (isActive) {
+          setOrganizations([item]);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading organization:', error);
+        if (isActive) {
+          setOperationError(error.message || 'Unable to load organization.');
+        }
+      })
+      .finally(() => {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [organizationId]);
+
+  async function deleteOrganizationItem(listName, itemId) {
+    if (!isAdmin || !organization) {
       return;
     }
 
-    setOrganizations(current =>
-      current.map(item => {
-        if (item.id !== organizationId) {
-          return item;
-        }
+    setOperationError('');
+    try {
+      if (listName === 'feedbackReports') {
+        await deleteFeedbackReport(organizationId, itemId);
+      } else {
+        await deleteOrganizationItemRequest(
+          organizationId,
+          listName,
+          itemId
+        );
+      }
 
-        const list = Array.isArray(item[listName]) ? item[listName] : [];
-        return {
+      setOrganizations(current =>
+        current.map(item => ({
           ...item,
-          [listName]: list.filter((_, index) => index !== itemIndex),
-        };
-      })
-    );
+          [listName]: item[listName].filter(entry => entry.id !== itemId),
+        }))
+      );
+    } catch (error) {
+      console.error('Error deleting organization entry:', error);
+      setOperationError(error.message || 'Unable to delete entry.');
+    }
   }
 
-  function handleAddEntry(event) {
+  async function handleAddEntry(event) {
     event.preventDefault();
 
     const listName =
       entryType === 'announcement' ? 'announcements' : 'maintenanceRequests';
-    const newEntry =
+    const item =
       entryType === 'announcement'
         ? {
             id: crypto.randomUUID(),
@@ -65,20 +115,29 @@ export function Dashboard() {
             status: entryStatus.trim(),
           };
 
-    setOrganizations(current =>
-      current.map(item => {
-        if (item.id !== organizationId) {
-          return item;
-        }
+    setEntryError('');
+    setIsAddingEntry(true);
+    try {
+      await addOrganizationItem(organizationId, listName, item);
 
-        const entries = Array.isArray(item[listName]) ? item[listName] : [];
-        return { ...item, [listName]: [...entries, newEntry] };
-      })
-    );
-    setEntryTitle('');
-    setEntryDate('');
-    setEntryDetails('');
-    setEntryStatus('');
+      setOrganizations(current =>
+        current.map(org =>
+          org.id === organizationId
+            ? { ...org, [listName]: [...(org[listName] || []), item] }
+            : org
+        )
+      );
+
+      setEntryTitle('');
+      setEntryDate('');
+      setEntryDetails('');
+      setEntryStatus('');
+    } catch (error) {
+      console.error('Error adding organization entry:', error);
+      setEntryError(error.message || 'Unable to add entry.');
+    } finally {
+      setIsAddingEntry(false);
+    }
   }
 
   function handleSaveMemberRole(event) {
@@ -87,35 +146,26 @@ export function Dashboard() {
       return;
     }
 
-    const targetMember = members.find(
-      member => member.username === memberToEdit
-    );
-    const adminCount = members.filter(member => member.role === 'admin').length;
-    if (
-      targetMember?.role === 'admin' &&
-      memberRole !== 'admin' &&
-      adminCount === 1
-    ) {
-      setRoleError('The organization must have at least one admin.');
-      return;
-    }
-
-    setOrganizations(current =>
-      current.map(item =>
-        item.id === organizationId
-          ? {
-              ...item,
-              members: getOrganizationMembers(item).map(member =>
-                member.username === memberToEdit
-                  ? { ...member, role: memberRole }
-                  : member
-              ),
-            }
-          : item
-      )
-    );
-    setMemberToEdit(null);
     setRoleError('');
+    setOperationError('');
+    updateMemberRole(organizationId, memberToEdit, memberRole)
+      .then(() => {
+        setOrganizations(current =>
+          current.map(item => ({
+            ...item,
+            members: getOrganizationMembers(item).map(member =>
+              member.username === memberToEdit
+                ? { ...member, role: memberRole }
+                : member
+            ),
+          }))
+        );
+        setMemberToEdit(null);
+      })
+      .catch(error => {
+        console.error('Error updating member role:', error);
+        setRoleError(error.message || 'Unable to update member role.');
+      });
   }
 
   function handleSaveEditedItem(event) {
@@ -124,38 +174,43 @@ export function Dashboard() {
       return;
     }
 
-    setOrganizations(current =>
-      current.map(item => {
-        if (item.id !== organizationId) {
-          return item;
-        }
+    const updatedItem =
+      itemToEdit.listName === 'announcements'
+        ? {
+            title: itemToEdit.title.trim(),
+            date: itemToEdit.date,
+            details: itemToEdit.details.trim(),
+          }
+        : {
+            issue: itemToEdit.title.trim(),
+            date: itemToEdit.date,
+            status: itemToEdit.status.trim(),
+          };
 
-        const entries = Array.isArray(item[itemToEdit.listName])
-          ? item[itemToEdit.listName]
-          : [];
-        return {
-          ...item,
-          [itemToEdit.listName]: entries.map((entry, index) =>
-            index === itemToEdit.index
-              ? itemToEdit.listName === 'announcements'
-                ? {
-                    ...entry,
-                    title: itemToEdit.title.trim(),
-                    date: itemToEdit.date,
-                    details: itemToEdit.details.trim(),
-                  }
-                : {
-                    ...entry,
-                    issue: itemToEdit.title.trim(),
-                    date: itemToEdit.date,
-                    status: itemToEdit.status.trim(),
-                  }
-              : entry
-          ),
-        };
+    setOperationError('');
+    updateOrganizationItem(
+      organizationId,
+      itemToEdit.listName,
+      itemToEdit.id,
+      updatedItem
+    )
+      .then(() => {
+        setOrganizations(current =>
+          current.map(item => ({
+            ...item,
+            [itemToEdit.listName]: item[itemToEdit.listName].map(entry =>
+              entry.id === itemToEdit.id
+                ? { ...entry, ...updatedItem }
+                : entry
+            ),
+          }))
+        );
+        setItemToEdit(null);
       })
-    );
-    setItemToEdit(null);
+      .catch(error => {
+        console.error('Error updating organization entry:', error);
+        setOperationError(error.message || 'Unable to update entry.');
+      });
   }
 
   const announcements = Array.isArray(organization?.announcements)
@@ -168,21 +223,48 @@ export function Dashboard() {
     ? organization.feedbackReports
     : [];
   const members = organization ? getOrganizationMembers(organization) : [];
-  const currentUser = localStorage.getItem('username');
   const isAdmin = members.some(
-    member => member.username === currentUser && member.role === 'admin'
+    member => member.username === userName && member.role === 'admin'
   );
   const isEmployee = members.some(
     member =>
-      member.username === currentUser &&
+      member.username === userName &&
       (member.role === 'admin' || member.role === 'employee')
   );
 
+  if (isLoading) {
+    return (
+      <main className="container py-5" role="status">
+        Loading organization...
+      </main>
+    );
+  }
+
+  if (!organization) {
+    return (
+      <main className="container py-5">
+        <p className="text-danger" role="alert">
+          {operationError || 'Organization not found.'}
+        </p>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => navigate('/organizations')}
+        >
+          View Organizations
+        </button>
+      </main>
+    );
+  }
+
   return (
     <main className="container py-5" data-organization-id={organizationId}>
+      {operationError && (
+        <p className="text-danger" role="alert">{operationError}</p>
+      )}
       <section className="mb-4">
         <h1 className="display-6 fw-bold mb-1">
-          Dashboard: {organization?.name || 'Organization not found'}
+          Dashboard: {organization.name}
         </h1>
         <button
           type="button"
@@ -255,7 +337,7 @@ export function Dashboard() {
                                 onClick={() =>
                                   setItemToEdit({
                                     listName: 'announcements',
-                                    index,
+                                    id: announcement.id,
                                     title: announcement.title || '',
                                     date: announcement.date || '',
                                     details: announcement.details || '',
@@ -269,7 +351,10 @@ export function Dashboard() {
                                 type="button"
                                 className="btn btn-outline-danger btn-sm"
                                 onClick={() =>
-                                  deleteOrganizationItem('announcements', index)
+                                  deleteOrganizationItem(
+                                    'announcements',
+                                    announcement.id
+                                  )
                                 }
                                 aria-label={`Delete announcement: ${announcement.title}`}
                               >
@@ -335,7 +420,7 @@ export function Dashboard() {
                                 onClick={() =>
                                   setItemToEdit({
                                     listName: 'maintenanceRequests',
-                                    index,
+                                    id: request.id,
                                     title: request.issue || '',
                                     date: request.date || '',
                                     status: request.status || '',
@@ -351,7 +436,7 @@ export function Dashboard() {
                                 onClick={() =>
                                   deleteOrganizationItem(
                                     'maintenanceRequests',
-                                    index
+                                    request.id
                                   )
                                 }
                                 aria-label={`Delete maintenance issue: ${request.issue}`}
@@ -421,7 +506,10 @@ export function Dashboard() {
                             type="button"
                             className="btn btn-outline-danger btn-sm"
                             onClick={() =>
-                              deleteOrganizationItem('feedbackReports', index)
+                              deleteOrganizationItem(
+                                'feedbackReports',
+                                report.id
+                              )
                             }
                             aria-label={`Delete feedback report from ${
                               report.name || 'unknown reporter'
@@ -580,11 +668,20 @@ export function Dashboard() {
                 </div>
               )}
               <div className="col-12">
-                <button type="submit" className="btn btn-primary">
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={isAddingEntry}
+                >
                   Add {entryType === 'announcement' ? 'Announcement' : 'Maintenance Issue'}
                 </button>
               </div>
             </form>
+            {entryError && (
+              <p className="small text-danger mt-2 mb-0" role="alert">
+                {entryError}
+              </p>
+            )}
           </div>
         </section>
       )}

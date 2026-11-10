@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { loginUser, registerUser } from '../api';
 
 export function Login({ onLogin }) {
   const [userName, setUserName] = React.useState('');
@@ -8,40 +9,23 @@ export function Login({ onLogin }) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const navigate = useNavigate();
 
-  async function handleLogin(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    await loginOrRegister('/api/auth/login');
+    const action = event.nativeEvent.submitter?.value;
+    await loginOrRegister(action === 'register' ? registerUser : loginUser);
   }
 
-  async function handleRegister() {
-    await loginOrRegister('/api/auth/register');
-  }
-
-  async function loginOrRegister(endpoint) {
+  async function loginOrRegister(authenticate) {
     setDisplayError(null);
     setIsSubmitting(true);
 
     try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify({ username: userName, password }),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      });
-
-      if (!res.ok) {
-        const body = await res.json();
-        setDisplayError(body.msg || `Request failed (${res.status})`);
-        return;
-      }
-
-      localStorage.setItem('username', userName);
-      onLogin(userName);
+      const user = await authenticate(userName.trim(), password);
+      onLogin(user.username);
       navigate('/account');
     } catch (error) {
       console.error('Login or registration request failed:', error);
-      setDisplayError('Unable to connect. Please try again.');
+      setDisplayError(error.message || 'Unable to connect. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -70,7 +54,7 @@ export function Login({ onLogin }) {
             <div className="card-body p-4">
               <h2 className="card-title text-center mb-4">Login</h2>
 
-              <form onSubmit={handleLogin}>
+              <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label htmlFor="username" className="form-label">
                     Username
@@ -108,14 +92,17 @@ export function Login({ onLogin }) {
                 <div className="account-buttons">
                   <button
                     type="submit"
+                    name="authAction"
+                    value="login"
                     disabled={isSubmitting || !userName.trim() || !password}
                     className="btn btn-primary w-100"
                   >
                     Log In
                   </button>
                   <button
-                    type="button"
-                    onClick={handleRegister}
+                    type="submit"
+                    name="authAction"
+                    value="register"
                     disabled={isSubmitting || !userName.trim() || !password}
                     className="btn btn-primary w-100"
                   >

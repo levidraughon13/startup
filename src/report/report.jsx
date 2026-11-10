@@ -1,19 +1,24 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
+import { addFeedbackReport } from '../api';
 
 export function Report() {
   const location = useLocation();
   const organizationId = location.state?.organizationId;
   const [submissionMessage, setSubmissionMessage] = React.useState('');
+  const [submissionError, setSubmissionError] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     if (!organizationId) {
+      setSubmissionError(true);
       setSubmissionMessage('Unable to submit report: no organization was selected.');
       return;
     }
 
+    const form = event.currentTarget;
     const formData = new FormData(event.currentTarget);
     const report = {
       id: crypto.randomUUID(),
@@ -25,35 +30,19 @@ export function Report() {
       description: formData.get('description'),
     };
 
+    setIsSubmitting(true);
+    setSubmissionError(false);
+    setSubmissionMessage('');
     try {
-      const organizations = JSON.parse(
-        localStorage.getItem('organizations') || '[]'
-      );
-      if (!Array.isArray(organizations)) {
-        throw new Error('Saved organizations data is invalid.');
-      }
-
-      const organizationIndex = organizations.findIndex(
-        organization => organization.id === organizationId
-      );
-      if (organizationIndex === -1) {
-        setSubmissionMessage('Unable to submit report: organization not found.');
-        return;
-      }
-
-      const organization = organizations[organizationIndex];
-      const feedbackReports = Array.isArray(organization.feedbackReports)
-        ? organization.feedbackReports
-        : [];
-      organizations[organizationIndex] = {
-        ...organization,
-        feedbackReports: [...feedbackReports, report],
-      };
-      localStorage.setItem('organizations', JSON.stringify(organizations));
-      event.currentTarget.reset();
+      await addFeedbackReport(organizationId, report);
+      form.reset();
       setSubmissionMessage('Report submitted successfully.');
     } catch (error) {
-      setSubmissionMessage(`Unable to submit report: ${error.message}`);
+      console.error('Error submitting feedback report:', error);
+      setSubmissionError(true);
+      setSubmissionMessage(error.message || 'Unable to submit report.');
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -179,13 +168,17 @@ export function Report() {
                   <button
                     type="submit"
                     className="btn btn-primary w-100"
+                    disabled={isSubmitting}
                   >
-                    Submit Report
+                    {isSubmitting ? 'Submitting...' : 'Submit Report'}
                   </button>
                 </div>
               </form>
               {submissionMessage && (
-                <p className="small mt-3 mb-0" role="status">
+                <p
+                  className={`small mt-3 mb-0 ${submissionError ? 'text-danger' : 'text-success'}`}
+                  role={submissionError ? 'alert' : 'status'}
+                >
                   {submissionMessage}
                 </p>
               )}
