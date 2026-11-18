@@ -6,6 +6,7 @@ import {
   deleteOrganizationItem as deleteOrganizationItemRequest,
   getOrganization,
   updateMemberRole,
+  updateOrganizationAddress,
   updateOrganizationItem,
 } from '../api';
 import {
@@ -30,6 +31,15 @@ export function Dashboard({ userName }) {
   const [memberRole, setMemberRole] = React.useState('');
   const [roleError, setRoleError] = React.useState('');
   const [itemToEdit, setItemToEdit] = React.useState(null);
+  const [isEditingAddress, setIsEditingAddress] = React.useState(false);
+  const [addressFields, setAddressFields] = React.useState({
+    streetAddress: '',
+    unit: '',
+    city: '',
+    state: '',
+    zipCode: '',
+  });
+  const [addressError, setAddressError] = React.useState('');
   const organization = organizations.find(item => item.id === organizationId);
 
   React.useEffect(() => {
@@ -213,6 +223,76 @@ export function Dashboard({ userName }) {
       });
   }
 
+  function openAddressEditor() {
+    if (!isAdmin || !organization) {
+      return;
+    }
+
+    const parts = (organization.address || '').split(',').map(part => part.trim());
+    let streetAddress = '';
+    let unit = '';
+    let city = '';
+    let state = '';
+    let zipCode = '';
+
+    if (parts.length >= 3) {
+      const stateZipMatch = (parts.at(-1) || '').match(/^([A-Za-z]{2})\s+(.+)$/);
+      state = stateZipMatch?.[1] || '';
+      zipCode = stateZipMatch?.[2] || '';
+      city = parts.at(-2) || '';
+      streetAddress = parts[0] || '';
+
+      if (parts.length >= 4) {
+        const unitMatch = (parts[1] || '').match(/^Apt\/Rm\s*(.+)$/i);
+        unit = unitMatch?.[1].trim() || '';
+      }
+    } else {
+      streetAddress = organization.address || '';
+    }
+
+    setAddressFields({
+      streetAddress,
+      unit,
+      city,
+      state: state.toUpperCase(),
+      zipCode,
+    });
+    setAddressError('');
+    setIsEditingAddress(true);
+  }
+
+  async function handleSaveAddress(event) {
+    event.preventDefault();
+    if (!isAdmin) {
+      return;
+    }
+
+    const street = addressFields.streetAddress.trim();
+    const unitText = addressFields.unit.trim();
+    const cityName = addressFields.city.trim();
+    const stateCode = addressFields.state.trim().toUpperCase();
+    const zip = addressFields.zipCode.trim();
+    const address = [
+      unitText ? `${street}, Apt/Rm ${unitText}` : street,
+      cityName,
+      `${stateCode} ${zip}`,
+    ].join(', ');
+
+    setAddressError('');
+    try {
+      await updateOrganizationAddress(organizationId, address);
+      setOrganizations(current =>
+        current.map(item =>
+          item.id === organizationId ? { ...item, address } : item
+        )
+      );
+      setIsEditingAddress(false);
+    } catch (error) {
+      console.error('Error updating organization address:', error);
+      setAddressError(error.message || 'Unable to update address.');
+    }
+  }
+
   const announcements = Array.isArray(organization?.announcements)
     ? organization.announcements
     : [];
@@ -275,9 +355,20 @@ export function Dashboard({ userName }) {
         </button>
       </section>
       <section className="mb-4">
-        <p className="mb-0">
-          <strong>Address:</strong> {organization?.address || 'N/A'}
-        </p>
+        <div className="d-flex flex-wrap align-items-center gap-2">
+          <p className="mb-0">
+            <strong>Address:</strong> {organization?.address || 'N/A'}
+          </p>
+          {isAdmin && (
+            <button
+              type="button"
+              className="btn btn-outline-primary btn-sm"
+              onClick={openAddressEditor}
+            >
+              Edit Address
+            </button>
+          )}
+        </div>
       </section>
       <section className="mb-4">
         <h2 className="h5 fw-bold mb-1">Your Role</h2>
@@ -687,6 +778,147 @@ export function Dashboard({ userName }) {
       )}
       {isAdmin && (
         <>
+          {isEditingAddress && (
+            <>
+              <div className="modal-backdrop fade show" />
+              <div
+                className="modal fade show"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="edit-address-title"
+                style={{ display: 'block' }}
+                tabIndex="-1"
+              >
+                <div className="modal-dialog modal-dialog-centered modal-lg">
+                  <div className="modal-content">
+                    <form onSubmit={handleSaveAddress}>
+                      <div className="modal-header">
+                        <h2
+                          id="edit-address-title"
+                          className="modal-title fs-5"
+                        >
+                          Edit Address
+                        </h2>
+                      </div>
+                      <div className="modal-body">
+                        <div className="row g-3">
+                          <div className="col-12 col-md-6">
+                            <label htmlFor="edit-address-street" className="form-label">
+                              Street Address
+                            </label>
+                            <input
+                              id="edit-address-street"
+                              type="text"
+                              className="form-control"
+                              value={addressFields.streetAddress}
+                              onChange={event =>
+                                setAddressFields(current => ({
+                                  ...current,
+                                  streetAddress: event.target.value,
+                                }))
+                              }
+                              required
+                            />
+                          </div>
+                          <div className="col-12 col-md-6">
+                            <label htmlFor="edit-address-unit" className="form-label">
+                              Apt/Rm # <span className="text-muted">(optional)</span>
+                            </label>
+                            <input
+                              id="edit-address-unit"
+                              type="text"
+                              className="form-control"
+                              value={addressFields.unit}
+                              onChange={event =>
+                                setAddressFields(current => ({
+                                  ...current,
+                                  unit: event.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="col-12 col-md-5">
+                            <label htmlFor="edit-address-city" className="form-label">
+                              City
+                            </label>
+                            <input
+                              id="edit-address-city"
+                              type="text"
+                              className="form-control"
+                              value={addressFields.city}
+                              onChange={event =>
+                                setAddressFields(current => ({
+                                  ...current,
+                                  city: event.target.value,
+                                }))
+                              }
+                              required
+                            />
+                          </div>
+                          <div className="col-12 col-md-3">
+                            <label htmlFor="edit-address-state" className="form-label">
+                              State
+                            </label>
+                            <input
+                              id="edit-address-state"
+                              type="text"
+                              className="form-control"
+                              value={addressFields.state}
+                              onChange={event =>
+                                setAddressFields(current => ({
+                                  ...current,
+                                  state: event.target.value,
+                                }))
+                              }
+                              maxLength={2}
+                              pattern="[A-Za-z]{2}"
+                              required
+                            />
+                          </div>
+                          <div className="col-12 col-md-4">
+                            <label htmlFor="edit-address-zip" className="form-label">
+                              Zip Code
+                            </label>
+                            <input
+                              id="edit-address-zip"
+                              type="text"
+                              className="form-control"
+                              value={addressFields.zipCode}
+                              onChange={event =>
+                                setAddressFields(current => ({
+                                  ...current,
+                                  zipCode: event.target.value,
+                                }))
+                              }
+                              pattern="[0-9]{5}(-[0-9]{4})?"
+                              required
+                            />
+                          </div>
+                        </div>
+                        {addressError && (
+                          <p className="text-danger mt-3 mb-0" role="alert">
+                            {addressError}
+                          </p>
+                        )}
+                      </div>
+                      <div className="modal-footer">
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          onClick={() => setIsEditingAddress(false)}
+                        >
+                          Cancel
+                        </button>
+                        <button type="submit" className="btn btn-primary">
+                          Save Address
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
           {memberToEdit && (
             <>
               <div className="modal-backdrop fade show" />

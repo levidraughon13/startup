@@ -83,6 +83,16 @@ export function deleteOrganization(organizationId) {
   });
 }
 
+export function updateOrganizationAddress(organizationId, address) {
+  return apiRequest(`/api/organizations/${organizationId}/address`, {
+    method: 'PUT',
+    body: JSON.stringify({ address }),
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+  });
+}
+
 export function joinOrganization(organizationId) {
   return apiRequest(`/api/organizations/${organizationId}/members`, {
     method: 'POST',

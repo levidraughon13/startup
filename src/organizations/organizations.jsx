@@ -15,7 +15,11 @@ export function Organizations({ userName, authLoading }) {
   const [loadError, setLoadError] = React.useState('');
   const [search, setSearch] = React.useState('');
   const [name, setName] = React.useState('');
-  const [address, setAddress] = React.useState('');
+  const [streetAddress, setStreetAddress] = React.useState('');
+  const [unit, setUnit] = React.useState('');
+  const [city, setCity] = React.useState('');
+  const [state, setState] = React.useState('');
+  const [zipCode, setZipCode] = React.useState('');
   const [authMessage, setAuthMessage] = React.useState('');
   const [membershipMessage, setMembershipMessage] = React.useState('');
   const navigate = useNavigate();
@@ -82,7 +86,18 @@ export function Organizations({ userName, authLoading }) {
 
     setAuthMessage('');
     try {
-      const organization = await createOrganization(name.trim(), address.trim());
+      const street = streetAddress.trim();
+      const unitText = unit.trim();
+      const cityName = city.trim();
+      const stateCode = state.trim().toUpperCase();
+      const zip = zipCode.trim();
+      const address = [
+        unitText ? `${street}, Apt/Rm ${unitText}` : street,
+        cityName,
+        `${stateCode} ${zip}`,
+      ].join(', ');
+
+      const organization = await createOrganization(name.trim(), address);
       setOrganizations(current => [
         ...current,
         { ...organization, members: [{ username: userName, role: 'admin' }] },
@@ -92,7 +107,11 @@ export function Organizations({ userName, authLoading }) {
         { ...organization, role: 'admin' },
       ]);
       setName('');
-      setAddress('');
+      setStreetAddress('');
+      setUnit('');
+      setCity('');
+      setState('');
+      setZipCode('');
     } catch (error) {
       console.error('Error adding organization:', error);
       setAuthMessage(error.message || 'Unable to add organization.');
@@ -191,8 +210,8 @@ export function Organizations({ userName, authLoading }) {
         </h2>
 
         <form className="row g-3" onSubmit={handleAddOrganization}>
-          <div className="col-12 col-md-5">
-            <label htmlFor="new-organization-name" className="visually-hidden">
+          <div className="col-12 col-md-3">
+            <label htmlFor="new-organization-name" className="form-label">
               Organization name
             </label>
             <input
@@ -200,7 +219,7 @@ export function Organizations({ userName, authLoading }) {
               id="new-organization-name"
               name="organizationName"
               className="form-control"
-              placeholder="Organization Name"
+              placeholder="Organization name"
               value={name}
               onChange={event => setName(event.target.value)}
               required
@@ -208,25 +227,95 @@ export function Organizations({ userName, authLoading }) {
           </div>
 
           <div className="col-12 col-md-5">
-            <label
-              htmlFor="new-organization-address"
-              className="visually-hidden"
-            >
-              Organization address
+            <label htmlFor="new-organization-street" className="form-label">
+              Street Address
             </label>
             <input
               type="text"
-              id="new-organization-address"
-              name="organizationAddress"
+              id="new-organization-street"
+              name="organizationStreetAddress"
               className="form-control"
-              placeholder="Organization Address"
-              value={address}
-              onChange={event => setAddress(event.target.value)}
+              placeholder="Street address"
+              value={streetAddress}
+              onChange={event => setStreetAddress(event.target.value)}
+              autoComplete="address-line1"
               required
             />
           </div>
 
-          <div className="col-12 col-md-2 d-flex align-items-end">
+          <div className="col-12 col-md-4">
+            <label htmlFor="new-organization-unit" className="form-label">
+              Apt/Rm # <span className="text-muted">(optional)</span>
+            </label>
+            <input
+              type="text"
+              id="new-organization-unit"
+              name="organizationUnit"
+              className="form-control"
+              placeholder="Apt/Rm #"
+              value={unit}
+              onChange={event => setUnit(event.target.value)}
+              autoComplete="address-line2"
+            />
+          </div>
+
+          <div className="col-12 col-md-4">
+            <label htmlFor="new-organization-city" className="form-label">
+              City
+            </label>
+            <input
+              type="text"
+              id="new-organization-city"
+              name="organizationCity"
+              className="form-control"
+              placeholder="City"
+              value={city}
+              onChange={event => setCity(event.target.value)}
+              autoComplete="address-level2"
+              required
+            />
+          </div>
+
+          <div className="col-12 col-md-2">
+            <label htmlFor="new-organization-state" className="form-label">
+              State
+            </label>
+            <input
+              type="text"
+              id="new-organization-state"
+              name="organizationState"
+              className="form-control"
+              placeholder="State"
+              value={state}
+              onChange={event => setState(event.target.value)}
+              autoComplete="address-level1"
+              maxLength={2}
+              pattern="[A-Za-z]{2}"
+              title="Enter a two-letter state code"
+              required
+            />
+          </div>
+
+          <div className="col-12 col-md-3">
+            <label htmlFor="new-organization-zip" className="form-label">
+              Zip Code
+            </label>
+            <input
+              type="text"
+              id="new-organization-zip"
+              name="organizationZipCode"
+              className="form-control"
+              placeholder="Zip code"
+              value={zipCode}
+              onChange={event => setZipCode(event.target.value)}
+              autoComplete="postal-code"
+              pattern="[0-9]{5}(-[0-9]{4})?"
+              title="Enter a 5-digit ZIP code or ZIP+4"
+              required
+            />
+          </div>
+
+          <div className="col-12 col-md-3 d-flex align-items-end">
             <button
               type="submit"
               className="btn btn-primary w-100"
